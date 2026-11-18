@@ -1,5 +1,19 @@
 # সোর্স অডিট
 
+## ০. প্রথম আসল অডিটের ফলাফল (২০২৬-১১-১৮, GitHub Actions)
+
+| সোর্স | HTTP / robots | সোল্ড | রেটিং | সিদ্ধান্ত |
+|---|---|---|---|---|
+| Daraz | পেজ 200 allowed; `/catalog/` নিষিদ্ধ | নেই | রিভিউ JSON-এ আছে | আংশিক: লিস্টিং খোঁজার নতুন পথ দরকার |
+| Cartup | 200 allowed | **`soldCount` আছে** | আছে | Go (প্রথম নতুন adapter) |
+| Othoba | 200 allowed | নেই | রিভিউ সংখ্যা | Go |
+| Bagdoom | 200 allowed | নেই | নেই | পরে |
+| AjkerDeal | ConnectTimeout | ? | ? | আবার চালিয়ে দেখা |
+| PriyoShop | 200 (৪ KB, B2B) | নেই | নেই | বাদ |
+| Rokomari, Rokomari Electronics, Bikroy | **403 Cloudflare** | - | - | ব্লক: চ্যালেঞ্জ পাশ কাটানো হবে না; হাতে ইনপুট |
+| Chaldal, Pickaboo, Shajgoj, Aarong | 200 allowed | নেই | নেই | পরের ক্যাটাগরি ফেজে |
+| Google Trends | GitHub IP থেকে ডেটা এসেছে | - | - | চালু, ঝুঁকি কমেছে |
+
 ## ১. যা এখন পর্যন্ত দেখা গেছে
 
 ২০২৬-১১-০৯ তারিখে Daraz ও Cartup-এর একটা করে প্রোডাক্ট পেজ সাধারণ HTML ফেচে খোলা হয়েছে। নমুনা মাত্র একটা, তাই এগুলো থেকে সাধারণ সিদ্ধান্ত নেওয়া যাবে না। আসল উত্তর আসবে `probe.py`-এর রিপোর্ট থেকে।
