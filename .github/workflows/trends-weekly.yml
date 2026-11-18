@@ -1,0 +1,68 @@
+name: Trends Weekly
+
+# প্রতি সোমবার বাংলাদেশ সময় ভোর ৪:০০ (রবিবার UTC ২২:০০)। Google-এর সাপ্তাহিক পয়েন্ট রবিবার শুরু হয়, সোমবারে আগের সপ্তাহ সম্পূর্ণ।
+# লাগবে: SUPABASE_URL, SUPABASE_SERVICE_KEY (Daraz Daily-র মতোই) এবং Phase 3 migration চালানো।
+# আংশিক রান ঠিক আছে: রেট-লিমিটে থামলে পরের রান বাকি শব্দ থেকে শুরু করে (সদ্য আনা শব্দ বাদ যায়)।
+on:
+  schedule:
+    - cron: "0 22 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "ডাটাবেজে না লিখে শুধু দেখুন"
+        type: boolean
+        default: false
+      force:
+        description: "সদ্য আনা শব্দও আবার আনুন"
+        type: boolean
+        default: false
+      category:
+        description: "শুধু এই ক্যাটাগরি (fashion / home / kitchen), ফাঁকা = সব"
+        required: false
+        default: ""
+      max_batches:
+        description: "সর্বোচ্চ কয়টা রিকোয়েস্ট-ব্যাচ (ফাঁকা = সীমা নেই)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trends-weekly
+  cancel-in-progress: false
+
+jobs:
+  trends:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r trends/requirements.txt
+      - name: Unit tests
+        run: python -m unittest discover -s trends/tests -t .
+      - name: Collect Google Trends
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          FORCE: ${{ inputs.force }}
+          CATEGORY: ${{ inputs.category }}
+          MAX_BATCHES: ${{ inputs.max_batches }}
+        run: |
+          ARGS=""
+          if [ -n "$CATEGORY" ]; then ARGS="$ARGS --category $CATEGORY"; fi
+          if [ -n "$MAX_BATCHES" ]; then ARGS="$ARGS --max-batches $MAX_BATCHES"; fi
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ "$FORCE" = "true" ]; then ARGS="$ARGS --force"; fi
+          python -m trends.run_trends $ARGS
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trends
+          path: run-output/
+          retention-days: 30

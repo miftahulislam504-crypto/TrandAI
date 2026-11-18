@@ -1,0 +1,49 @@
+{
+  "_note": "রিভিউ টেক্সট বিশ্লেষণের নিয়ম (LLM ছাড়া, কিছু নির্দিষ্ট নিয়মে)। সব সীমা অনুমান-ভিত্তিক। রান শেষে Summary-র নমুনা দেখে টিউন করুন: ভুল ধরলে সীমা বাড়ান।",
+  "counterfeit": {
+    "enabled": true
+  },
+  "fake_reviews": {
+    "enabled": true,
+    "dup_min_len": 20,
+    "dup_min_count": 3,
+    "dup_long_len": 60,
+    "dup_long_count": 2,
+    "burst_min": 8,
+    "burst_ratio": 5.0,
+    "burst_min_days": 3,
+    "repeat_reviewer_min": 3
+  },
+  "sample_size": 8,
+  "sentiment": {
+    "enabled": true,
+    "_note": "Groq দিয়ে রিভিউয়ের সেন্টিমেন্ট (-১/০/+১) ও টপিক। কী: env GROQ1, GROQ2, GROQ3... (বা GROQ_API_KEY_1..)। একটার সীমা শেষ হলে পরেরটা। Groq-এর সীমা অর্গানাইজেশন ধরে, তাই key আলাদা অ্যাকাউন্টের হতে হবে। মডেল নাম Groq বদলায়, models তালিকায় প্রথমটা না পেলে পরেরটা চেষ্টা হয়।",
+    "models": [
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "qwen/qwen3.6-27b"
+    ],
+    "reasoning_effort": "low",
+    "batch_size": 12,
+    "max_chars_per_review": 400,
+    "min_chars": 3,
+    "max_reviews_per_run": 600,
+    "max_requests_per_run": 200,
+    "max_output_tokens": 1200,
+    "max_runtime_seconds": 1200,
+    "max_wait_seconds": 70,
+    "request_timeout_seconds": 60,
+    "topics": [
+      "quality",
+      "price",
+      "delivery",
+      "packaging",
+      "size_fit",
+      "color",
+      "durability",
+      "authenticity",
+      "service",
+      "description_match"
+    ]
+  }
+}

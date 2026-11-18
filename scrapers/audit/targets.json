@@ -1,0 +1,172 @@
+{
+  "_note": "প্রতিটা সোর্সের কয়েকটা পাবলিক পেজ। নতুন পেজ যোগ করতে pages-এ {label, url} যোগ করুন। *_candidate লেবেলের endpoint গুলো অনুমান-ভিত্তিক, কাজ না করলে রিপোর্টে সেটাই দেখাবে।",
+  "sources": [
+    {
+      "id": "daraz",
+      "name": "Daraz",
+      "base_url": "https://www.daraz.com.bd",
+      "pages": [
+        {
+          "label": "product_page",
+          "url": "https://www.daraz.com.bd/products/dhal-ghutni-wooden-mixer-i542322850.html"
+        },
+        {
+          "label": "category_page",
+          "url": "https://www.daraz.com.bd/small-kitchen-appliances/"
+        },
+        {
+          "label": "search_page",
+          "url": "https://www.daraz.com.bd/catalog/?q=kitchen%20organizer"
+        },
+        {
+          "label": "search_json_candidate",
+          "url": "https://www.daraz.com.bd/catalog/?ajax=true&q=kitchen%20organizer"
+        },
+        {
+          "label": "reviews_json_candidate",
+          "url": "https://my.daraz.com.bd/pdp/review/getReviewList?itemId=542322850&pageSize=5&filter=0&sort=0&pageNo=1"
+        }
+      ]
+    },
+    {
+      "id": "cartup",
+      "name": "Cartup",
+      "base_url": "https://cartup.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://cartup.com/"
+        },
+        {
+          "label": "product_page",
+          "url": "https://cartup.com/product/kiam_h-10_infrared_cooker_29552044535632_xefnnl"
+        }
+      ]
+    },
+    {
+      "id": "othoba",
+      "name": "Othoba",
+      "base_url": "https://www.othoba.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.othoba.com/"
+        }
+      ]
+    },
+    {
+      "id": "bagdoom",
+      "name": "Bagdoom",
+      "base_url": "https://www.bagdoom.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.bagdoom.com/"
+        }
+      ]
+    },
+    {
+      "id": "ajkerdeal",
+      "name": "AjkerDeal",
+      "base_url": "https://www.ajkerdeal.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.ajkerdeal.com/"
+        }
+      ]
+    },
+    {
+      "id": "priyoshop",
+      "name": "PriyoShop",
+      "base_url": "https://www.priyoshop.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.priyoshop.com/"
+        }
+      ]
+    },
+    {
+      "id": "rokomari",
+      "name": "Rokomari",
+      "base_url": "https://www.rokomari.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.rokomari.com/"
+        }
+      ]
+    },
+    {
+      "id": "chaldal",
+      "name": "Chaldal",
+      "base_url": "https://chaldal.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://chaldal.com/"
+        }
+      ]
+    },
+    {
+      "id": "pickaboo",
+      "name": "Pickaboo",
+      "base_url": "https://www.pickaboo.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.pickaboo.com/"
+        }
+      ]
+    },
+    {
+      "id": "shajgoj",
+      "name": "Shajgoj",
+      "base_url": "https://shajgoj.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://shajgoj.com/"
+        }
+      ]
+    },
+    {
+      "id": "aarong",
+      "name": "Aarong",
+      "base_url": "https://www.aarong.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://www.aarong.com/"
+        }
+      ]
+    },
+    {
+      "id": "bikroy",
+      "name": "Bikroy",
+      "base_url": "https://bikroy.com",
+      "pages": [
+        {
+          "label": "home",
+          "url": "https://bikroy.com/"
+        },
+        {
+          "label": "search_page",
+          "url": "https://bikroy.com/en/ads/bangladesh?query=kitchen"
+        }
+      ]
+    },
+    {
+      "id": "rokomari_electronics",
+      "name": "Rokomari Electronics",
+      "base_url": "https://www.rokomari.com",
+      "pages": [
+        {
+          "label": "electronics_page",
+          "url": "https://www.rokomari.com/electronics"
+        }
+      ]
+    }
+  ]
+}

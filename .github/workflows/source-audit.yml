@@ -1,0 +1,49 @@
+name: Source Audit (Phase 0)
+
+# হাতে চালানোর জন্য: Actions ট্যাব -> Source Audit (Phase 0) -> Run workflow
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r scrapers/requirements.txt
+
+      - name: Unit tests
+        run: python -m unittest scrapers/audit/test_probe.py
+
+      - name: Probe e-commerce sources
+        run: python scrapers/audit/probe.py
+
+      - name: Probe Google Trends
+        continue-on-error: true
+        run: |
+          pip install pytrends
+          python scrapers/audit/trends_probe.py
+
+      - name: Add reports to run summary
+        if: always()
+        run: |
+          for f in audit-output/audit-report.md audit-output/trends-report.md; do
+            if [ -f "$f" ]; then cat "$f" >> "$GITHUB_STEP_SUMMARY"; echo "" >> "$GITHUB_STEP_SUMMARY"; fi
+          done
+
+      - name: Upload audit output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-audit
+          path: audit-output/
+          retention-days: 30

@@ -1,0 +1,54 @@
+name: Daraz Daily
+
+# প্রতিদিন বাংলাদেশ সময় রাত ২:০০ (UTC ২০:০০)। হাতেও চালানো যায়।
+# লাগবে: Settings -> Secrets and variables -> Actions -> SUPABASE_URL, SUPABASE_SERVICE_KEY
+on:
+  schedule:
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      category:
+        description: "শুধু এই ক্যাটাগরি (fashion / home / kitchen ...; বন্ধ ক্যাটাগরিও নাম ধরে চলে), ফাঁকা = চালু সব"
+        required: false
+        default: ""
+      dry_run:
+        description: "ডাটাবেজে না লিখে শুধু দেখুন"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daraz-daily
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scrapers/requirements.txt
+      - name: Run Daraz scrape
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          REVIEWER_HASH_SALT: ${{ secrets.REVIEWER_HASH_SALT }}
+          CATEGORY: ${{ inputs.category }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          ARGS=""
+          if [ -n "$CATEGORY" ]; then ARGS="$ARGS --category $CATEGORY"; fi
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python -m scrapers.run_daraz $ARGS
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daraz-daily
+          path: run-output/
+          retention-days: 14

@@ -1,0 +1,339 @@
+{
+  "_note": "status: to_audit = Phase 0 রিপোর্টের পর Go/No-Go ঠিক হবে। has_sold_count: null = এখনও অজানা। kind: ecommerce | social | trend | competitor_tool। method: auto (নিজের স্ক্র্যাপার/API) | manual (আপনি হাতে দেখে ইনপুট) | paid_export (পেইড টুল থেকে CSV এনে আপলোড) | skip (বাদ, কারণ notes-এ)।",
+  "sources": [
+    {
+      "id": "daraz",
+      "name": "Daraz",
+      "base_url": "https://www.daraz.com.bd",
+      "phase": 1,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "fashion",
+        "home",
+        "kitchen"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "cartup",
+      "name": "Cartup",
+      "base_url": "https://cartup.com",
+      "phase": 4,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "fashion",
+        "home",
+        "kitchen"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "othoba",
+      "name": "Othoba",
+      "base_url": "https://www.othoba.com",
+      "phase": 4,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "home",
+        "kitchen",
+        "fashion"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "bagdoom",
+      "name": "Bagdoom",
+      "base_url": "https://www.bagdoom.com",
+      "phase": 4,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "fashion"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "ajkerdeal",
+      "name": "AjkerDeal",
+      "base_url": "https://www.ajkerdeal.com",
+      "phase": 4,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "fashion",
+        "home"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "priyoshop",
+      "name": "PriyoShop",
+      "base_url": "https://www.priyoshop.com",
+      "phase": 4,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "focus": [
+        "fashion"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "rokomari",
+      "name": "Rokomari",
+      "base_url": "https://www.rokomari.com",
+      "phase": 8,
+      "status": "later",
+      "has_sold_count": null,
+      "focus": [
+        "books"
+      ],
+      "kind": "ecommerce",
+      "method": "auto"
+    },
+    {
+      "id": "pickaboo",
+      "name": "Pickaboo",
+      "base_url": "https://www.pickaboo.com",
+      "phase": 9,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "ইলেকট্রনিক্স/গ্যাজেট। অডিট রিপোর্টের পর",
+      "focus": [
+        "electronics"
+      ]
+    },
+    {
+      "id": "chaldal",
+      "name": "Chaldal",
+      "base_url": "https://chaldal.com",
+      "phase": 9,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "মুদি/কিচেন-সংলগ্ন। অ্যাপ-ভিত্তিক হলে ওয়েবে ডেটা কম হতে পারে",
+      "focus": [
+        "kitchen"
+      ]
+    },
+    {
+      "id": "shajgoj",
+      "name": "Shajgoj",
+      "base_url": "https://shajgoj.com",
+      "phase": 9,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "বিউটি",
+      "focus": [
+        "beauty"
+      ]
+    },
+    {
+      "id": "aarong",
+      "name": "Aarong",
+      "base_url": "https://www.aarong.com",
+      "phase": 9,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "ফ্যাশন/হোম, নিজস্ব ব্র্যান্ড। সোল্ড কাউন্ট থাকার সম্ভাবনা কম",
+      "focus": [
+        "fashion",
+        "home"
+      ]
+    },
+    {
+      "id": "bikroy",
+      "name": "Bikroy",
+      "base_url": "https://bikroy.com",
+      "phase": 9,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "ক্লাসিফাইড (সেকেন্ডহ্যান্ড)। বিক্রির সংখ্যা নেই, শুধু বিজ্ঞাপন সংখ্যা ও দাম; তাই চাহিদার বদলে সরবরাহের সংকেত"
+    },
+    {
+      "id": "rokomari_electronics",
+      "name": "Rokomari Electronics",
+      "base_url": "https://www.rokomari.com",
+      "phase": 8,
+      "status": "later",
+      "has_sold_count": null,
+      "kind": "ecommerce",
+      "method": "auto",
+      "notes": "Rokomari adapter-এরই আরেক ক্যাটাগরি",
+      "focus": [
+        "electronics"
+      ]
+    },
+    {
+      "id": "facebook_marketplace",
+      "name": "Facebook Marketplace",
+      "base_url": "https://www.facebook.com/marketplace",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "social",
+      "method": "manual",
+      "notes": "লগইন লাগে, Meta স্বয়ংক্রিয় সংগ্রহ নিষেধ করে। হাতে দেখে /ads-এর মতো ইনপুট ছাড়া উপায় নেই"
+    },
+    {
+      "id": "facebook_ads_library",
+      "name": "Facebook Ad Library",
+      "base_url": "https://www.facebook.com/ads/library",
+      "phase": 6,
+      "status": "built_manual",
+      "has_sold_count": null,
+      "kind": "social",
+      "method": "manual",
+      "notes": "Phase 6-এ আধা-ম্যানুয়াল ইনপুট তৈরি"
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "base_url": "https://www.tiktok.com",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "social",
+      "method": "manual",
+      "notes": "অফিসিয়াল সহজ API নেই। TikTok Creative Center (নিচে) দিয়ে ট্রেন্ড দেখা যায়"
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "base_url": "https://www.instagram.com",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "social",
+      "method": "manual",
+      "notes": "লগইন ও স্ক্র্যাপিং নিষেধ। হাতে দেখা"
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "base_url": "https://www.youtube.com",
+      "phase": 10,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "social",
+      "method": "auto",
+      "notes": "অফিসিয়াল YouTube Data API v3 (বিনামূল্যে কোটা) দিয়ে ভিউ/ট্রেন্ড"
+    },
+    {
+      "id": "google_trends",
+      "name": "Google Trends",
+      "base_url": "https://trends.google.com",
+      "phase": 3,
+      "status": "built",
+      "has_sold_count": null,
+      "kind": "trend",
+      "method": "auto",
+      "notes": "Phase 3-এ তৈরি; আসল রানে যাচাই বাকি"
+    },
+    {
+      "id": "tiktok_creative_center",
+      "name": "TikTok Creative Center",
+      "base_url": "https://ads.tiktok.com/business/creativecenter",
+      "phase": 10,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "trend",
+      "method": "manual",
+      "notes": "ফ্রি, বাংলাদেশ ফিল্টার আছে কি না যাচাই লাগবে"
+    },
+    {
+      "id": "pinterest_trends",
+      "name": "Pinterest Trends",
+      "base_url": "https://trends.pinterest.com",
+      "phase": 10,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "trend",
+      "method": "manual",
+      "notes": "ফ্রি; বাংলাদেশ সমর্থন যাচাই লাগবে"
+    },
+    {
+      "id": "exploding_topics",
+      "name": "Exploding Topics",
+      "base_url": "https://explodingtopics.com",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "trend",
+      "method": "paid_export",
+      "notes": "পেইড, API নেই; বৈশ্বিক ডেটা, বাংলাদেশ-নির্দিষ্ট নয়"
+    },
+    {
+      "id": "infoneen",
+      "name": "Infoneen",
+      "base_url": null,
+      "phase": 10,
+      "status": "unknown",
+      "has_sold_count": null,
+      "kind": "trend",
+      "method": "manual",
+      "notes": "এই টুল সম্পর্কে নিশ্চিত তথ্য পাইনি; আপনি লিংক/বিবরণ দিলে ঠিক করব"
+    },
+    {
+      "id": "similarweb",
+      "name": "Similarweb",
+      "base_url": "https://www.similarweb.com",
+      "phase": 10,
+      "status": "to_audit",
+      "has_sold_count": null,
+      "kind": "competitor_tool",
+      "method": "manual",
+      "notes": "ফ্রি সংস্করণে সাইটের মোট ট্রাফিক দেখা যায়, প্রোডাক্ট-স্তরের নয়। API পেইড"
+    },
+    {
+      "id": "minea",
+      "name": "Minea",
+      "base_url": "https://www.minea.com",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "competitor_tool",
+      "method": "paid_export",
+      "notes": "পেইড বিজ্ঞাপন-স্পাই; বাংলাদেশ কভারেজ কম হতে পারে"
+    },
+    {
+      "id": "dropship_io",
+      "name": "Dropship.io",
+      "base_url": "https://www.dropship.io",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "competitor_tool",
+      "method": "paid_export",
+      "notes": "Shopify স্টোর বিশ্লেষণ; বাংলাদেশের মার্কেটপ্লেসে কাজে লাগবে না"
+    },
+    {
+      "id": "pipiads",
+      "name": "Pipiads",
+      "base_url": "https://www.pipiads.com",
+      "phase": 10,
+      "status": "skip",
+      "has_sold_count": null,
+      "kind": "competitor_tool",
+      "method": "paid_export",
+      "notes": "TikTok/Meta বিজ্ঞাপন-স্পাই, পেইড, API নেই"
+    }
+  ]
+}

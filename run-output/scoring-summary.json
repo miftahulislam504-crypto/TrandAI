@@ -1,0 +1,54 @@
+{
+  "scored": 24,
+  "unscored": 0,
+  "tiers": {
+    "dont": 7,
+    "mid": 17
+  },
+  "confidence": {
+    "high": 24
+  },
+  "provisional": {},
+  "basis": {
+    "sold": 24
+  },
+  "by_category": {
+    "fashion": {
+      "dont": 1
+    },
+    "kitchen": {
+      "dont": 6,
+      "mid": 17
+    }
+  },
+  "google": {
+    "used": 0,
+    "mapped_no_data": 7,
+    "no_keyword": 17,
+    "by_segment": {}
+  },
+  "ads": {
+    "checks": 7,
+    "used": 6,
+    "used_product": 2,
+    "used_segment": 4,
+    "stale": 0,
+    "no_check": 18,
+    "crowded": 1,
+    "unmapped_keywords": [
+      "ok1",
+      "zzz mystery"
+    ]
+  },
+  "score_quantiles": {
+    "min": 35.7,
+    "p25": 41.0,
+    "median": 54.9,
+    "p75": 62.3,
+    "p90": 69.8,
+    "max": 71.4
+  },
+  "written": 24,
+  "google_warning": null,
+  "ads_warning": null
+}

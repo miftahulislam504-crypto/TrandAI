@@ -1,0 +1,370 @@
+{
+  "_note": "seeds: category = Daraz ক্যাটাগরি URL, keyword = সার্চ শব্দ। বদলানো/যোগ করা যাবে। প্রতি ক্যাটাগরির লক্ষ্য categories.json-এ। electronics/beauty/baby/sports-এর seeds আমার অনুমান থেকে লেখা, আসল Daraz-এ ফল আসে কি না যাচাই হয়নি; চালু করার আগে `--category <নাম>` দিয়ে স্মোক টেস্ট চালান।",
+  "settings": {
+    "strategy_order": [
+      "ajax",
+      "html"
+    ],
+    "sort": "popularity",
+    "delay_seconds": 3.0,
+    "jitter_seconds": 1.5,
+    "block_limit": 3,
+    "max_pages_per_seed": 6,
+    "detail_limit": 30,
+    "reviews_limit": 20,
+    "reviews_max_pages": 2,
+    "inactive_after_days": 30
+  },
+  "seeds": {
+    "fashion": [
+      {
+        "type": "keyword",
+        "q": "panjabi"
+      },
+      {
+        "type": "keyword",
+        "q": "saree"
+      },
+      {
+        "type": "keyword",
+        "q": "three piece"
+      },
+      {
+        "type": "keyword",
+        "q": "kurti"
+      },
+      {
+        "type": "keyword",
+        "q": "t-shirt"
+      },
+      {
+        "type": "keyword",
+        "q": "polo shirt"
+      },
+      {
+        "type": "keyword",
+        "q": "jeans pant"
+      },
+      {
+        "type": "keyword",
+        "q": "hijab"
+      },
+      {
+        "type": "keyword",
+        "q": "burka"
+      },
+      {
+        "type": "keyword",
+        "q": "sneakers"
+      },
+      {
+        "type": "keyword",
+        "q": "sandal"
+      },
+      {
+        "type": "keyword",
+        "q": "ladies bag"
+      }
+    ],
+    "home": [
+      {
+        "type": "keyword",
+        "q": "bed sheet"
+      },
+      {
+        "type": "keyword",
+        "q": "curtain"
+      },
+      {
+        "type": "keyword",
+        "q": "wall clock"
+      },
+      {
+        "type": "keyword",
+        "q": "wall decor"
+      },
+      {
+        "type": "keyword",
+        "q": "storage box"
+      },
+      {
+        "type": "keyword",
+        "q": "led light"
+      },
+      {
+        "type": "keyword",
+        "q": "door mat"
+      },
+      {
+        "type": "keyword",
+        "q": "pillow"
+      },
+      {
+        "type": "keyword",
+        "q": "blanket"
+      },
+      {
+        "type": "keyword",
+        "q": "wall sticker"
+      },
+      {
+        "type": "keyword",
+        "q": "artificial flower"
+      },
+      {
+        "type": "keyword",
+        "q": "table cloth"
+      }
+    ],
+    "kitchen": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/small-kitchen-appliances/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/cooking-appliances/"
+      },
+      {
+        "type": "keyword",
+        "q": "kitchen organizer"
+      },
+      {
+        "type": "keyword",
+        "q": "non stick pan"
+      },
+      {
+        "type": "keyword",
+        "q": "air fryer"
+      },
+      {
+        "type": "keyword",
+        "q": "lunch box"
+      },
+      {
+        "type": "keyword",
+        "q": "knife set"
+      },
+      {
+        "type": "keyword",
+        "q": "dinner set"
+      },
+      {
+        "type": "keyword",
+        "q": "kitchen rack"
+      },
+      {
+        "type": "keyword",
+        "q": "food container"
+      },
+      {
+        "type": "keyword",
+        "q": "water bottle"
+      },
+      {
+        "type": "keyword",
+        "q": "rice cooker"
+      }
+    ],
+    "electronics": [
+      {
+        "type": "keyword",
+        "q": "earbuds"
+      },
+      {
+        "type": "keyword",
+        "q": "bluetooth speaker"
+      },
+      {
+        "type": "keyword",
+        "q": "power bank"
+      },
+      {
+        "type": "keyword",
+        "q": "smart watch"
+      },
+      {
+        "type": "keyword",
+        "q": "phone case"
+      },
+      {
+        "type": "keyword",
+        "q": "mobile charger"
+      },
+      {
+        "type": "keyword",
+        "q": "usb cable"
+      },
+      {
+        "type": "keyword",
+        "q": "gaming mouse"
+      },
+      {
+        "type": "keyword",
+        "q": "keyboard"
+      },
+      {
+        "type": "keyword",
+        "q": "trimmer"
+      },
+      {
+        "type": "keyword",
+        "q": "webcam"
+      },
+      {
+        "type": "keyword",
+        "q": "led ring light"
+      }
+    ],
+    "beauty": [
+      {
+        "type": "keyword",
+        "q": "face wash"
+      },
+      {
+        "type": "keyword",
+        "q": "sunscreen"
+      },
+      {
+        "type": "keyword",
+        "q": "lipstick"
+      },
+      {
+        "type": "keyword",
+        "q": "hair oil"
+      },
+      {
+        "type": "keyword",
+        "q": "perfume"
+      },
+      {
+        "type": "keyword",
+        "q": "serum"
+      },
+      {
+        "type": "keyword",
+        "q": "body lotion"
+      },
+      {
+        "type": "keyword",
+        "q": "shampoo"
+      },
+      {
+        "type": "keyword",
+        "q": "face mask"
+      },
+      {
+        "type": "keyword",
+        "q": "nail polish"
+      },
+      {
+        "type": "keyword",
+        "q": "makeup brush"
+      },
+      {
+        "type": "keyword",
+        "q": "hair straightener"
+      }
+    ],
+    "baby": [
+      {
+        "type": "keyword",
+        "q": "baby diaper"
+      },
+      {
+        "type": "keyword",
+        "q": "baby toy"
+      },
+      {
+        "type": "keyword",
+        "q": "baby dress"
+      },
+      {
+        "type": "keyword",
+        "q": "feeding bottle"
+      },
+      {
+        "type": "keyword",
+        "q": "baby carrier"
+      },
+      {
+        "type": "keyword",
+        "q": "kids bag"
+      },
+      {
+        "type": "keyword",
+        "q": "kids shoes"
+      },
+      {
+        "type": "keyword",
+        "q": "baby lotion"
+      },
+      {
+        "type": "keyword",
+        "q": "baby stroller"
+      },
+      {
+        "type": "keyword",
+        "q": "school bag"
+      },
+      {
+        "type": "keyword",
+        "q": "kids t-shirt"
+      },
+      {
+        "type": "keyword",
+        "q": "baby blanket"
+      }
+    ],
+    "sports": [
+      {
+        "type": "keyword",
+        "q": "yoga mat"
+      },
+      {
+        "type": "keyword",
+        "q": "dumbbell"
+      },
+      {
+        "type": "keyword",
+        "q": "skipping rope"
+      },
+      {
+        "type": "keyword",
+        "q": "football"
+      },
+      {
+        "type": "keyword",
+        "q": "badminton racket"
+      },
+      {
+        "type": "keyword",
+        "q": "cricket bat"
+      },
+      {
+        "type": "keyword",
+        "q": "gym gloves"
+      },
+      {
+        "type": "keyword",
+        "q": "resistance band"
+      },
+      {
+        "type": "keyword",
+        "q": "gym bag"
+      },
+      {
+        "type": "keyword",
+        "q": "fitness tracker"
+      },
+      {
+        "type": "keyword",
+        "q": "cycling helmet"
+      },
+      {
+        "type": "keyword",
+        "q": "protein shaker"
+      }
+    ]
+  }
+}

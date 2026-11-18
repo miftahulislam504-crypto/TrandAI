@@ -1,0 +1,9 @@
+audit-output/
+run-output/
+__pycache__/
+*.pyc
+.env
+.env.*
+node_modules/
+.next/
+.venv/

@@ -1,0 +1,48 @@
+{
+  "_note": "ক্যাটাগরি ও প্রতিটার প্রোডাক্ট সংখ্যার লক্ষ্য (প্রস্তাব, বদলানো যাবে)। enabled: false হলে রোজকার রানে ধরা হয় না (--category দিয়ে নাম ধরে চালালে চলে, চালু করার আগে স্মোক টেস্টের জন্য)। চালু করার আগে `python tools/capacity.py` চালিয়ে GitHub Actions-এর মিনিট দেখে নিন। সোর্সভিত্তিক seeds config/daraz.json-এ। total_target_products = চালু ক্যাটাগরির লক্ষ্যের যোগফল (tools/capacity.py যাচাই করে)।",
+  "total_target_products": 450,
+  "categories": [
+    {
+      "slug": "fashion",
+      "name": "ফ্যাশন",
+      "target_products": 170,
+      "enabled": true
+    },
+    {
+      "slug": "home",
+      "name": "হোম",
+      "target_products": 140,
+      "enabled": true
+    },
+    {
+      "slug": "kitchen",
+      "name": "কিচেন",
+      "target_products": 140,
+      "enabled": true
+    },
+    {
+      "slug": "electronics",
+      "name": "ইলেকট্রনিক্স ও গ্যাজেট",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "beauty",
+      "name": "বিউটি ও পার্সোনাল কেয়ার",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "baby",
+      "name": "বেবি ও কিডস",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "sports",
+      "name": "স্পোর্টস ও ফিটনেস",
+      "target_products": 80,
+      "enabled": false
+    }
+  ]
+}

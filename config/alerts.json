@@ -1,0 +1,9 @@
+{
+  "_note": "অ্যালার্টের সীমা। alerts/config.py প্রতিটা মান যাচাই করে, ভুল হলে রান থামে। ওয়াচলিস্টের প্রোডাক্টে সব ধরন কাজ করে। ওয়াচলিস্টের বাইরের প্রোডাক্টে শুধু discovery (নতুন করে Best/Don't হলে)। score_move: আজকের স্কোর আর ঠিক days দিন বা তার আগের সবচেয়ে কাছের স্কোরের (max_gap_days-এর মধ্যে) পার্থক্য points বা বেশি হলে। price_move: একই প্রোডাক্টের সব listing-এর ৭ দিনের দামের বদলের মধ্যমা (median) pct% বা বেশি হলে। redflag: রিভিউয়ে নকল/ফেক অভিযোগ min_count বা বেশি হলে (আগের দিন কম ছিল)। সংখ্যাগুলো অনুমান, আসল ডেটা দেখে বদলান।",
+  "score_move": {"points": 15, "days": 7, "max_gap_days": 14},
+  "price_move": {"pct": 10},
+  "redflag": {"min_count": 2},
+  "discovery": {"enabled": true, "tiers": ["best"]},
+  "keep_days": 60,
+  "telegram": {"enabled": true, "max_items": 12}
+}

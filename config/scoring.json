@@ -1,0 +1,115 @@
+{
+  "_note": "স্কোরিং ফর্মুলার ওজন ও থ্রেশহোল্ড। শুরুর মান অনুমান-ভিত্তিক, Phase 2-এর শেষে আসল ডেটা দেখে ক্যালিব্রেট হবে। scoring/config.py প্রতিটা মান যাচাই করে। trend.google: Phase 3, Google Trends অংশ (share = Trend ফ্যাক্টরে Google-এর ভাগ)। Phase 5: weights.margin ও weights.competition ডিফল্ট ০ (স্কোর বদলায় না, শুধু প্রদর্শন)। Phase 6: weights.ads_signal-ও ডিফল্ট ০ (আগে ১০ ছিল, কিন্তু আসল Ads Library ডেটা যাচাইয়ের আগে স্কোরে ঢোকানো ঠিক নয়; যাচাই হলে ১০ করুন)। কেনা দাম দিয়ে margin.enabled ও ওজন > ০ করলে মোট স্কোরে ঢোকে।",
+  "weights": {
+    "demand": 30,
+    "trend": 25,
+    "review_quality": 20,
+    "bad_review": 15,
+    "ads_signal": 0,
+    "margin": 0,
+    "competition": 0
+  },
+  "history_days": 45,
+  "min_history_days_for_velocity": 14,
+  "demand": {
+    "velocity_window_days": 30,
+    "velocity_share": 0.7
+  },
+  "trend": {
+    "recent_days": 7,
+    "smoothing_per_day": 0.3,
+    "google": {
+      "enabled": true,
+      "share": 0.5,
+      "recent_weeks": 4,
+      "prior_weeks": 8,
+      "year_weeks": 52,
+      "min_weeks": 26,
+      "smoothing_share": 0.1,
+      "span": 0.6931,
+      "momentum_weight": 0.6,
+      "position_weight": 0.4,
+      "seasonal_yoy_weight": 0.7,
+      "max_age_days": 28
+    }
+  },
+  "review_quality": {
+    "m": 30,
+    "floor": 3.0,
+    "ceiling": 5.0,
+    "recent_days": 90,
+    "recent_weight": 0.4,
+    "min_recent_reviews": 5
+  },
+  "bad_review": {
+    "min_reviews": 5,
+    "prior_strength": 10,
+    "cap_ratio": 0.3
+  },
+  "percentile": {
+    "min_population": 8
+  },
+  "tier_mode": "absolute",
+  "best": {
+    "min_score": 75,
+    "min_rating_count": 20,
+    "min_adj_rating": 4.0,
+    "max_bad_ratio": 0.1,
+    "min_demand_score": 60,
+    "min_confidence": "medium",
+    "percentile_top": 15
+  },
+  "dont": {
+    "max_score": 45,
+    "max_adj_rating": 3.3,
+    "min_rating_count": 10,
+    "min_bad_ratio": 0.25,
+    "min_bad_reviews_n": 8,
+    "falling_weeks": 4,
+    "percentile_bottom": 25
+  },
+  "confidence": {
+    "high_weight": 75,
+    "medium_weight": 50,
+    "high_min_rating_count": 20,
+    "medium_min_rating_count": 5,
+    "high_min_history_days": 14
+  },
+  "tier_change_days": 3,
+  "ads": {
+    "enabled": true,
+    "max_age_days": 45,
+    "full_advertisers": 10,
+    "full_ads": 30,
+    "longevity_floor_days": 7,
+    "longevity_full_days": 45,
+    "growth": {"min_gap_days": 14, "max_gap_days": 120, "smoothing_ads": 3, "span": 0.6931, "new_share_neutral": 0.3},
+    "component_weights": {"breadth": 0.4, "longevity": 0.4, "growth": 0.2},
+    "crowded_advertisers": 15,
+    "crowded_ads": 60,
+    "_note": "Facebook Ads Library-র হাতে-দেওয়া চেক (ড্যাশবোর্ডের /ads)। breadth: আলাদা বিজ্ঞাপনদাতা full_advertisers জন হলে ১০০ (সংখ্যা না দিলে বিজ্ঞাপন full_ads টা হলে ১০০)। longevity: সবচেয়ে পুরনো বিজ্ঞাপন floor দিনে ০, full দিনে ১০০ (৩০+ দিন চললে বিজ্ঞাপনদাতার কাছে লাভজনক ধরা হয়)। growth: আগের চেক (min_gap..max_gap দিন আগের) থাকলে বিজ্ঞাপন সংখ্যার বদল, না থাকলে গত ৩০ দিনে শুরু হওয়া বিজ্ঞাপনের ভাগ (new_share_neutral = ৫০ পাওয়ার ভাগ, অনুমান)। crowded_*: এর বেশি হলে 'বিজ্ঞাপনে ভিড়' ব্যাজ (শুধু তথ্য, Best আটকায় না)। max_age_days-এর পুরনো চেক স্কোরে ধরা হয় না। সবই অনুমান, আসল ডেটা দেখে বদলান"
+  },
+  "margin": {
+    "enabled": true,
+    "platform_fee_pct": 0,
+    "return_rate_pct": 5,
+    "floor_pct": 5,
+    "ceiling_pct": 35,
+    "best_min_margin_pct": 10,
+    "_note": "কেনা দাম ইনপুট দেওয়া প্রোডাক্টে কাজ করে। platform_fee_pct = বিক্রির চ্যানেলের কমিশন (নিজের পেজ/সাইটে বিক্রি হলে ০)। return_rate_pct = ফেরতের হার (অনুমান)। best_min_margin_pct-এর নিচে মার্জিন হলে Best হয় না। সবই অনুমান, আপনার ব্যবসা অনুযায়ী বদলান"
+  },
+  "competition": {
+    "enabled": true,
+    "saturated_sellers": 15,
+    "_note": "১ সেলারে ১০০, saturated_sellers বা বেশিতে ০। একই সাইটের একই প্রোডাক্টের আলাদা সেলার তখনই এক গোনা হয় যখন ম্যাচিংয়ে এক প্রোডাক্ট হয়েছে (সেম-সোর্স জোড়া আপনি রিভিউ কিউতে accept করলে)"
+  },
+  "sentiment_notes": {"min_count": 2, "_note": "নেগেটিভ রিভিউয়ে একই টপিক এতবার এলে কারণে দেখায়। স্কোর বদলায় না (Groq-এর ফল ভুল করতে পারে, তাই স্কোরে ঢোকানো হয়নি)"},
+  "red_flags": {
+    "enabled": true,
+    "counterfeit": {
+      "min_count": 2,
+      "min_ratio": 0.05
+    },
+    "_note": "রিভিউয়ের টেক্সটে নকল/ডুপ্লিকেট অভিযোগ। min_count-এর বেশি এবং নমুনার min_ratio-র বেশি হলে Best হয় না ও কারণে রেড ফ্ল্যাগ দেখায়"
+  }
+}

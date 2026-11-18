@@ -1,0 +1,43 @@
+name: Daraz Smoke Test
+
+# Phase 1-এর প্রথম ধাপ: ডেটাবেজ ছাড়াই দেখে Daraz থেকে কী কী ফিল্ড আসছে।
+# Actions ট্যাব -> Daraz Smoke Test -> Run workflow। রান পেজের Summary-তে রিপোর্ট দেখা যাবে।
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: "শুধু এই ক্যাটাগরি (fashion / home / kitchen), ফাঁকা = প্রথমটা"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scrapers/requirements.txt
+      - name: Unit tests
+        run: |
+          python -m unittest discover -s scrapers/tests -t .
+          python -m unittest discover -s scoring/tests -t .
+      - name: Smoke test
+        env:
+          CATEGORY: ${{ inputs.category }}
+        run: |
+          ARGS="--smoke"
+          if [ -n "$CATEGORY" ]; then ARGS="$ARGS --category $CATEGORY"; fi
+          python -m scrapers.run_daraz $ARGS
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daraz-smoke
+          path: run-output/
+          retention-days: 30

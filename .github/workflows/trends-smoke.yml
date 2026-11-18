@@ -1,0 +1,32 @@
+name: Trends Smoke Test
+
+# হাতে চালান: Actions -> Trends Smoke Test -> Run workflow। ডাটাবেজ লাগে না, মাত্র ২টা রিকোয়েস্ট।
+# উদ্দেশ্য: (১) GitHub-এর IP থেকে Google Trends ডেটা দেয় কি না, (২) config/trends.json-এর anchor ঠিক কি না।
+# pytrends আর্কাইভ করা লাইব্রেরি, Google প্রায়ই ৪২৯ দেয়। কাজ না করলেও রিপোর্ট Summary-তে আসবে, সেটা আমাকে পাঠান।
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r trends/requirements.txt
+      - name: Unit tests
+        run: python -m unittest discover -s trends/tests -t .
+      - name: Smoke
+        run: python -m trends.run_trends --smoke
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trends-smoke
+          path: run-output/
+          retention-days: 30

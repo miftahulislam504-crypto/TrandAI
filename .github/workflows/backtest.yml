@@ -1,0 +1,66 @@
+name: Backtest
+
+# মাসে একবার, মাসের শেষ দিনে (UTC রাত ২৩:০০ = বাংলাদেশ সময় পরদিন ভোর ৫:০০) ও হাতে চালানো যায়।
+# শুধু পড়ে: ডাটাবেজ বা config কিছু বদলায় না। রিপোর্ট Summary-তে ও artifact-এ (backtest-report.md)।
+# ডেটা কম থাকলে (config/backtest.json-এর min_*) টিউনিং চলে না, রিপোর্টে কারণ লেখা থাকে।
+# লাগবে: SUPABASE_URL, SUPABASE_SERVICE_KEY
+on:
+  schedule:
+    - cron: "0 23 28-31 * *"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "কত দিন পিছনের স্কোর ধরবে"
+        required: false
+        default: "120"
+      horizon:
+        description: "পরের কত দিনের বিক্রি দেখবে (ফাঁকা = config)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backtest
+  cancel-in-progress: false
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scrapers/requirements.txt
+      - name: Unit tests
+        run: python -m unittest discover -s backtest/tests -t .
+      # cron মাসের ২৮–৩১ তারিখে প্রতিদিন বাজে; এই ধাপ শুধু মাসের শেষ দিনে (পরের দিন ১ তারিখ হলে) এগোয়। হাতে চালালে সবসময় এগোয়
+      - name: Month-end gate
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u -d tomorrow +%d)" = "01" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run backtest
+        if: steps.gate.outputs.run == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DAYS: ${{ inputs.days }}
+          HORIZON: ${{ inputs.horizon }}
+        run: |
+          ARGS="--days ${DAYS:-120}"
+          if [ -n "$HORIZON" ]; then ARGS="$ARGS --horizon $HORIZON"; fi
+          python -m backtest.run_backtest $ARGS
+      - name: Upload report
+        if: always() && steps.gate.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest
+          path: run-output/
+          retention-days: 90

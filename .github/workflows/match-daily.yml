@@ -1,0 +1,58 @@
+name: Match Daily
+
+# প্রতিদিন বাংলাদেশ সময় ভোর ২:৪০ (UTC ২০:৪০): Daraz Daily-র পরে, Score Daily-র আগে, যাতে নতুন মার্জ স্কোরে ধরা পড়ে।
+# লাগবে: SUPABASE_URL, SUPABASE_SERVICE_KEY (অন্য workflow-র মতোই) এবং Phase 4 migration (২টা: phase4, phase4b) চালানো।
+# রান শেষে Summary-তে দেখা যাবে কয়টা মার্জ হলো, কয়টা জোড়া রিভিউ কিউতে গেল। কিউ দেখুন ড্যাশবোর্ডের /matches পেজে।
+on:
+  schedule:
+    - cron: "40 20 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "ডাটাবেজে না লিখে শুধু দেখুন কী হতো"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: match-daily
+  cancel-in-progress: false
+
+jobs:
+  match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scrapers/requirements.txt
+      - name: Unit tests
+        run: python -m unittest discover -s matching/tests -t .
+      # ছবির হ্যাশ: প্রতি রানে সর্বোচ্চ ৩০০টা (config/matching.json -> image.hash_limit_per_run)। ব্যর্থ হলেও ম্যাচিং চলে
+      - name: Hash product images
+        if: ${{ inputs.dry_run != true }}
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python -m matching.hash_images
+      - name: Match products
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          ARGS=""
+          if [ "$DRY_RUN" = "true" ]; then ARGS="--dry-run"; fi
+          python -m matching.run_matching $ARGS
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matching
+          path: run-output/
+          retention-days: 30

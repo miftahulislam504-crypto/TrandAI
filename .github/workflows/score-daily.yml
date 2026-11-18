@@ -1,0 +1,105 @@
+name: Score Daily
+
+# প্রতিদিন বাংলাদেশ সময় ভোর ৩:০০ (UTC ২১:০০), Daraz Daily শেষ হওয়ার ১ ঘণ্টা পরে। হাতেও চালানো যায়।
+# লাগবে: SUPABASE_URL, SUPABASE_SERVICE_KEY (Daraz Daily-র মতোই)
+# রান শেষে Summary-তে ট্যাগের হিসাব ও স্কোর বণ্টন, আর artifact-এ spotcheck.md (যাচাইয়ের নমুনা) পাবেন।
+on:
+  schedule:
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "ডাটাবেজে না লিখে শুধু দেখুন"
+        type: boolean
+        default: false
+      date:
+        description: "এই তারিখের স্কোর (YYYY-MM-DD), ফাঁকা = আজ"
+        required: false
+        default: ""
+      category:
+        description: "শুধু এই ক্যাটাগরি (fashion / home / kitchen ...), ফাঁকা = সব"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: score-daily
+  cancel-in-progress: false
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scrapers/requirements.txt
+      - name: Unit tests
+        run: |
+          python -m unittest discover -s scoring/tests -t .
+          python -m unittest discover -s reviewintel/tests -t .
+          python -m unittest discover -s alerts/tests -t .
+      # রিভিউ টেক্সট বিশ্লেষণ (নকল অভিযোগ, সন্দেহজনক রিভিউ)। Phase 5 migration না চললে এই ধাপ ব্যর্থ হয়, স্কোরিং তবু চলে
+      - name: Analyze reviews
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m reviewintel.run_intel
+      # রিভিউয়ের সেন্টিমেন্ট ও টপিক (Groq)। key-গুলো আলাদা আলাদা অ্যাকাউন্টের হতে হবে: GROQ1, GROQ2, GROQ3 নামে secret।
+      # key না থাকলে বা সব key-র সীমা শেষ হলে যতটুকু হয়েছে রেখে এগোয়, বাকিটা পরের রানে। ব্যর্থ হলেও স্কোরিং চলে
+      - name: Review sentiment (Groq)
+        if: ${{ inputs.dry_run != true }}
+        continue-on-error: true
+        timeout-minutes: 25
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ1: ${{ secrets.GROQ1 }}
+          GROQ2: ${{ secrets.GROQ2 }}
+          GROQ3: ${{ secrets.GROQ3 }}
+          GROQ4: ${{ secrets.GROQ4 }}
+          GROQ5: ${{ secrets.GROQ5 }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m reviewintel.run_sentiment
+      - name: Score products
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          SCORE_DATE: ${{ inputs.date }}
+          CATEGORY: ${{ inputs.category }}
+        run: |
+          ARGS=""
+          if [ -n "$SCORE_DATE" ]; then ARGS="$ARGS --date $SCORE_DATE"; fi
+          if [ -n "$CATEGORY" ]; then ARGS="$ARGS --category $CATEGORY"; fi
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python -m scoring.run_scoring $ARGS
+      # অ্যালার্ট (Phase 7): আজকের স্কোর আগের দিনের সাথে মিলিয়ে ট্যাগ বদল ইত্যাদি। Telegram ঐচ্ছিক: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, DASHBOARD_URL secret।
+      # Phase 7 migration না চললে এই ধাপ ব্যর্থ হয়, স্কোর আগেই লেখা হয়ে গেছে
+      - name: Alerts
+        if: ${{ inputs.dry_run != true }}
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          SCORE_DATE: ${{ inputs.date }}
+        run: |
+          ARGS=""
+          if [ -n "$SCORE_DATE" ]; then ARGS="$ARGS --date $SCORE_DATE"; fi
+          python -m alerts.run_alerts $ARGS
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scoring
+          path: run-output/
+          retention-days: 30
