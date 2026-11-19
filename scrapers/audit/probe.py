@@ -134,6 +134,12 @@ def load_robots(session: requests.Session, base_url: str, source_id: str) -> dic
     return {"url": url, "status": r.status_code, "groups": groups, "text": text}
 
 
+def origin_of(url: str) -> str:
+    """URL-এর নিজের হোস্টের origin (robots.txt প্রতিটা হোস্টের আলাদা)।"""
+    u = urlparse(url)
+    return f"{u.scheme}://{u.netloc}"
+
+
 def robots_decision(robots: dict, url: str) -> str:
     status = robots["status"]
     if status is None or status >= 500:
@@ -406,8 +412,15 @@ def main() -> int:
     records: list[dict] = []
     for src in cfg["sources"]:
         print(f"== {src['id']}", flush=True)
-        robots = load_robots(session, src["base_url"], src["id"])
+        base_origin = origin_of(src["base_url"])
+        robots_by_origin = {base_origin: load_robots(session, src["base_url"], src["id"])}
         for page in src["pages"]:
+            # যে পেজ অন্য হোস্টে (যেমন my.daraz.com.bd), তার নিজের robots.txt দিয়ে যাচাই
+            origin = origin_of(page["url"])
+            if origin not in robots_by_origin:
+                host_id = f"{src['id']}__{urlparse(origin).netloc.replace('.', '_')}"
+                robots_by_origin[origin] = load_robots(session, origin, host_id)
+            robots = robots_by_origin[origin]
             rec = probe_page(session, src, page, robots)
             print(f"   {page['label']}: robots={rec['robots']} status={rec.get('status')}", flush=True)
             records.append(rec)

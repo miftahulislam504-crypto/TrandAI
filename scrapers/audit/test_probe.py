@@ -107,5 +107,12 @@ class AnalyzeTests(unittest.TestCase):
         self.assertEqual(probe.detect_block(200, "all good"), [])
 
 
+class OriginTests(unittest.TestCase):
+    def test_origin_of_separates_hosts(self):
+        self.assertEqual(probe.origin_of("https://my.daraz.com.bd/pdp/review/getReviewList?itemId=1"), "https://my.daraz.com.bd")
+        self.assertEqual(probe.origin_of("https://www.daraz.com.bd/x/"), "https://www.daraz.com.bd")
+        self.assertNotEqual(probe.origin_of("https://my.daraz.com.bd/a"), probe.origin_of("https://www.daraz.com.bd/a"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,7 +6,7 @@
       "name": "Daraz",
       "base_url": "https://www.daraz.com.bd",
       "phase": 1,
-      "status": "go",
+      "status": "verified",
       "has_sold_count": true,
       "focus": [
         "fashion",
@@ -15,7 +15,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "অডিট ২: ক্যাটাগরি পেজ + ?ajax=true robots-এ নিষিদ্ধ নয়, JSON দেয় (৪০ আইটেম/পেজ, `itemSoldCntShow` ৪০টার মধ্যে ৩৯টায়, দাম, রেটিং, রিভিউ সংখ্যা)। /catalog/ (সার্চ) নিষিদ্ধ, তাই কীওয়ার্ড seed বাদ; আসল ক্যাটাগরি slug দিয়ে চলবে। Category Discovery workflow slug খুঁজে দেবে"
+      "notes": "Smoke Test ২০২৬-১১-১৯ পাস: womens-sarees ক্যাটাগরি ajax-এ ২০টা আইটেম, url/title/দাম/মূল দাম/রেটিং/রেটিং সংখ্যা/সোল্ড/সেলার/ব্র্যান্ড/স্টক সব ১০০%। /catalog/ নিষিদ্ধ তাই ক্যাটাগরি URL seed। রিভিউ API (my.daraz.com.bd) সেই হোস্টের robots.txt-এ অনুমতি পায়নি, তাই রিভিউ টেক্সট নেওয়া হয় না (রেটিং গড়/সংখ্যা লিস্টিং থেকে আসে)। প্রোডাক্ট পেজের রিভিউ মডিউল JS-লোডেড, HTML-এ নেই"
     },
     {
       "id": "cartup",

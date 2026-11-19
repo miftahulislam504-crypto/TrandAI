@@ -133,7 +133,8 @@
 - [x] অডিট আবার চালানো: Daraz ক্যাটাগরি ajax কাজ করে, সোল্ড কাউন্ট আছে
 - [x] Daraz Category Discovery রাউন্ড ১: ৫৪টা ক্যাটাগরি মিলেছে, fashion/home/kitchen/beauty/baby-র seed বসেছে (`config/daraz.json`)
 - [ ] Discovery রাউন্ড ২ (ইলেকট্রনিক্স, স্পোর্টস, নির্দিষ্ট পণ্য-ক্যাটাগরি): workflow আবার চালিয়ে artifact পাঠানো
-- [ ] Daraz Smoke Test চালানো (নতুন seed দিয়ে), তারপর Daraz Daily
+- [x] Daraz Smoke Test পাস (লিস্টিংয়ের ফিল্ড ১০০%; রিভিউ API robots-এ বন্ধ, তাই রিভিউ-টেক্সট নেই)
+- [ ] Daraz Daily প্রথম আসল রান (Supabase সিক্রেট লাগবে), তারপর কয়েক দিনের ডেটা জমলে স্কোরিং
 - [ ] Cartup adapter: sitemap থেকে প্রোডাক্ট URL, প্রোডাক্ট পেজ থেকে দাম/রেটিং (query string নিষিদ্ধ, `soldCount` শুধু ফ্ল্যাশ সেলে)। তারপর Othoba
 
 ---
