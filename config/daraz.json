@@ -18,102 +18,86 @@
   "seeds": {
     "fashion": [
       {
-        "type": "keyword",
-        "q": "panjabi"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-sarees/"
       },
       {
-        "type": "keyword",
-        "q": "saree"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-t-shirts/"
       },
       {
-        "type": "keyword",
-        "q": "three piece"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-bags/"
       },
       {
-        "type": "keyword",
-        "q": "kurti"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-dresses/"
       },
       {
-        "type": "keyword",
-        "q": "t-shirt"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-sneakers/"
       },
       {
-        "type": "keyword",
-        "q": "polo shirt"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-sweaters/"
       },
       {
-        "type": "keyword",
-        "q": "jeans pant"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-jeans/"
       },
       {
-        "type": "keyword",
-        "q": "hijab"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-fashion/"
       },
       {
-        "type": "keyword",
-        "q": "burka"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-fashion/"
       },
       {
-        "type": "keyword",
-        "q": "sneakers"
-      },
-      {
-        "type": "keyword",
-        "q": "sandal"
-      },
-      {
-        "type": "keyword",
-        "q": "ladies bag"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/jewellery-fashion/"
       }
     ],
     "home": [
       {
-        "type": "keyword",
-        "q": "bed sheet"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/bedding/"
       },
       {
-        "type": "keyword",
-        "q": "curtain"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/blankets-throws/"
       },
       {
-        "type": "keyword",
-        "q": "wall clock"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/anti-allergy-pillows/"
       },
       {
-        "type": "keyword",
-        "q": "wall decor"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/comforters-quilts/"
       },
       {
-        "type": "keyword",
-        "q": "storage box"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/lighting/"
       },
       {
-        "type": "keyword",
-        "q": "led light"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/ceiling-lights/"
       },
       {
-        "type": "keyword",
-        "q": "door mat"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/wall-lights/"
       },
       {
-        "type": "keyword",
-        "q": "pillow"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/bedside-lamps/"
       },
       {
-        "type": "keyword",
-        "q": "blanket"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/furniture-decor-2/"
       },
       {
-        "type": "keyword",
-        "q": "wall sticker"
-      },
-      {
-        "type": "keyword",
-        "q": "artificial flower"
-      },
-      {
-        "type": "keyword",
-        "q": "table cloth"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/all-fans/"
       }
     ],
     "kitchen": [
@@ -126,246 +110,174 @@
         "url": "https://www.daraz.com.bd/cooking-appliances/"
       },
       {
-        "type": "keyword",
-        "q": "kitchen organizer"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/blenders/"
       },
       {
-        "type": "keyword",
-        "q": "non stick pan"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/grinders/"
       },
       {
-        "type": "keyword",
-        "q": "air fryer"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/food-preparation/"
       },
       {
-        "type": "keyword",
-        "q": "lunch box"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/kitchen-dining/"
       },
       {
-        "type": "keyword",
-        "q": "knife set"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/shop-everyday-glassware/"
       },
       {
-        "type": "keyword",
-        "q": "dinner set"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/drinkware-glassware/"
       },
       {
-        "type": "keyword",
-        "q": "kitchen rack"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baking-tools-accessories/"
       },
       {
-        "type": "keyword",
-        "q": "food container"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/kitchen-fixtures/"
       },
       {
-        "type": "keyword",
-        "q": "water bottle"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/cooktops/"
       },
       {
-        "type": "keyword",
-        "q": "rice cooker"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/water-dispensers-purifiers/"
       }
     ],
-    "electronics": [
-      {
-        "type": "keyword",
-        "q": "earbuds"
-      },
-      {
-        "type": "keyword",
-        "q": "bluetooth speaker"
-      },
-      {
-        "type": "keyword",
-        "q": "power bank"
-      },
-      {
-        "type": "keyword",
-        "q": "smart watch"
-      },
-      {
-        "type": "keyword",
-        "q": "phone case"
-      },
-      {
-        "type": "keyword",
-        "q": "mobile charger"
-      },
-      {
-        "type": "keyword",
-        "q": "usb cable"
-      },
-      {
-        "type": "keyword",
-        "q": "gaming mouse"
-      },
-      {
-        "type": "keyword",
-        "q": "keyboard"
-      },
-      {
-        "type": "keyword",
-        "q": "trimmer"
-      },
-      {
-        "type": "keyword",
-        "q": "webcam"
-      },
-      {
-        "type": "keyword",
-        "q": "led ring light"
-      }
-    ],
+    "electronics": [],
     "beauty": [
       {
-        "type": "keyword",
-        "q": "face wash"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/beauty-health/"
       },
       {
-        "type": "keyword",
-        "q": "sunscreen"
-      },
-      {
-        "type": "keyword",
-        "q": "lipstick"
-      },
-      {
-        "type": "keyword",
-        "q": "hair oil"
-      },
-      {
-        "type": "keyword",
-        "q": "perfume"
-      },
-      {
-        "type": "keyword",
-        "q": "serum"
-      },
-      {
-        "type": "keyword",
-        "q": "body lotion"
-      },
-      {
-        "type": "keyword",
-        "q": "shampoo"
-      },
-      {
-        "type": "keyword",
-        "q": "face mask"
-      },
-      {
-        "type": "keyword",
-        "q": "nail polish"
-      },
-      {
-        "type": "keyword",
-        "q": "makeup brush"
-      },
-      {
-        "type": "keyword",
-        "q": "hair straightener"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/bath-body-accessories/"
       }
     ],
     "baby": [
       {
-        "type": "keyword",
-        "q": "baby diaper"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mother-baby/"
       },
       {
-        "type": "keyword",
-        "q": "baby toy"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-toddler-bottles/"
       },
       {
-        "type": "keyword",
-        "q": "baby dress"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-bottle-tote-bags/"
       },
       {
-        "type": "keyword",
-        "q": "feeding bottle"
-      },
-      {
-        "type": "keyword",
-        "q": "baby carrier"
-      },
-      {
-        "type": "keyword",
-        "q": "kids bag"
-      },
-      {
-        "type": "keyword",
-        "q": "kids shoes"
-      },
-      {
-        "type": "keyword",
-        "q": "baby lotion"
-      },
-      {
-        "type": "keyword",
-        "q": "baby stroller"
-      },
-      {
-        "type": "keyword",
-        "q": "school bag"
-      },
-      {
-        "type": "keyword",
-        "q": "kids t-shirt"
-      },
-      {
-        "type": "keyword",
-        "q": "baby blanket"
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-food-snacks/"
       }
     ],
-    "sports": [
-      {
-        "type": "keyword",
-        "q": "yoga mat"
-      },
-      {
-        "type": "keyword",
-        "q": "dumbbell"
-      },
-      {
-        "type": "keyword",
-        "q": "skipping rope"
-      },
-      {
-        "type": "keyword",
-        "q": "football"
-      },
-      {
-        "type": "keyword",
-        "q": "badminton racket"
-      },
-      {
-        "type": "keyword",
-        "q": "cricket bat"
-      },
-      {
-        "type": "keyword",
-        "q": "gym gloves"
-      },
-      {
-        "type": "keyword",
-        "q": "resistance band"
-      },
-      {
-        "type": "keyword",
-        "q": "gym bag"
-      },
-      {
-        "type": "keyword",
-        "q": "fitness tracker"
-      },
-      {
-        "type": "keyword",
-        "q": "cycling helmet"
-      },
-      {
-        "type": "keyword",
-        "q": "protein shaker"
-      }
-    ]
+    "sports": []
   },
-  "_robots_note": "অডিট (২০২৬-১১-১৮): Daraz robots.txt `/catalog/` নিষিদ্ধ করেছে, তাই type=keyword seed গুলো রান হলে RobotsDisallowed-এ বাদ যায়। ক্যাটাগরি URL (+ ajax=true) নিষিদ্ধ নয়। পরের অডিটে Daraz হোমপেজ ও ajax নমুনা দেখে keyword seed-এর বদলে আসল ক্যাটাগরি URL বসানো হবে। `/*from=` প্যারামিটার নিষিদ্ধ, URL-এ from= যোগ করা যাবে না।"
+  "_robots_note": "Daraz robots.txt `/catalog/` নিষিদ্ধ, তাই কীওয়ার্ড seed সরানো হয়েছে (পুরনো তালিকা `_keyword_seeds_removed`-এ)। seed এখন Category Discovery-তে যাচাই-করা ক্যাটাগরি (২০২৬-১১-১৯)। electronics ও sports-এর slug এখনও মেলেনি, তাই খালি ও ক্যাটাগরি বন্ধ। `/*from=` প্যারামিটার নিষিদ্ধ, URL-এ from= যোগ করা যাবে না।",
+  "_keyword_seeds_removed": {
+    "fashion": [
+      "panjabi",
+      "saree",
+      "three piece",
+      "kurti",
+      "t-shirt",
+      "polo shirt",
+      "jeans pant",
+      "hijab",
+      "burka",
+      "sneakers",
+      "sandal",
+      "ladies bag"
+    ],
+    "home": [
+      "bed sheet",
+      "curtain",
+      "wall clock",
+      "wall decor",
+      "storage box",
+      "led light",
+      "door mat",
+      "pillow",
+      "blanket",
+      "wall sticker",
+      "artificial flower",
+      "table cloth"
+    ],
+    "kitchen": [
+      "kitchen organizer",
+      "non stick pan",
+      "air fryer",
+      "lunch box",
+      "knife set",
+      "dinner set",
+      "kitchen rack",
+      "food container",
+      "water bottle",
+      "rice cooker"
+    ],
+    "electronics": [
+      "earbuds",
+      "bluetooth speaker",
+      "power bank",
+      "smart watch",
+      "phone case",
+      "mobile charger",
+      "usb cable",
+      "gaming mouse",
+      "keyboard",
+      "trimmer",
+      "webcam",
+      "led ring light"
+    ],
+    "beauty": [
+      "face wash",
+      "sunscreen",
+      "lipstick",
+      "hair oil",
+      "perfume",
+      "serum",
+      "body lotion",
+      "shampoo",
+      "face mask",
+      "nail polish",
+      "makeup brush",
+      "hair straightener"
+    ],
+    "baby": [
+      "baby diaper",
+      "baby toy",
+      "baby dress",
+      "feeding bottle",
+      "baby carrier",
+      "kids bag",
+      "kids shoes",
+      "baby lotion",
+      "baby stroller",
+      "school bag",
+      "kids t-shirt",
+      "baby blanket"
+    ],
+    "sports": [
+      "yoga mat",
+      "dumbbell",
+      "skipping rope",
+      "football",
+      "badminton racket",
+      "cricket bat",
+      "gym gloves",
+      "resistance band",
+      "gym bag",
+      "fitness tracker",
+      "cycling helmet",
+      "protein shaker"
+    ]
+  }
 }

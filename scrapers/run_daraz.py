@@ -279,6 +279,10 @@ def smoke_markdown(r: dict) -> str:
     st = r["client_stats"]
     L.append(f"রিকোয়েস্ট: {st['requests']}, সফল: {st['ok']}, ব্লক: {st['blocked']}, "
              f"robots নিষেধ: {st['robots_skipped']}, ত্রুটি: {st['errors']}")
+    kw = [d for d in r["diags"] if isinstance(d.get("seed"), dict) and d["seed"].get("type") == "keyword"]
+    if kw:
+        L += ["", "> ⚠️ **পুরনো কনফিগ:** `config/daraz.json`-এ কীওয়ার্ড seed আছে। Daraz robots.txt `/catalog/` (সার্চ) নিষিদ্ধ করেছে, "
+              "তাই এগুলো কখনো চলবে না। রিপোতে সর্বশেষ `config/daraz.json` (ক্যাটাগরি URL seed সহ) বসিয়ে কমিট করুন।"]
     L += ["", "## লিস্টিং ডিসকভারি", ""]
     for d in r["diags"]:
         L.append(f"- {d['category']} / {d['seed']}: কৌশল `{d['strategy']}`, পাওয়া {d['found']}, "

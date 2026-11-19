@@ -36,6 +36,8 @@ jobs:
           python-version: "3.11"
       - run: pip install -r scrapers/requirements.txt
       - name: Unit tests
+        env:
+          RUN_OUT: ${{ runner.temp }}/test-output
         run: python -m unittest discover -s backtest/tests -t .
       # cron মাসের ২৮–৩১ তারিখে প্রতিদিন বাজে; এই ধাপ শুধু মাসের শেষ দিনে (পরের দিন ১ তারিখ হলে) এগোয়। হাতে চালালে সবসময় এগোয়
       - name: Month-end gate

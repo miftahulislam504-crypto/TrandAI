@@ -22,6 +22,8 @@ jobs:
         run: pip install -r scrapers/requirements.txt
 
       - name: Unit tests
+        env:
+          RUN_OUT: ${{ runner.temp }}/test-output
         run: python -m unittest scrapers/audit/test_probe.py
 
       - name: Probe e-commerce sources

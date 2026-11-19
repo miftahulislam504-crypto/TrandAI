@@ -19,6 +19,8 @@ jobs:
           python-version: "3.11"
       - run: pip install -r scrapers/requirements.txt
       - name: Unit tests
+        env:
+          RUN_OUT: ${{ runner.temp }}/test-output
         run: python -m unittest discover -s scrapers/tests -t .
       - name: Discover categories
         run: python -m scrapers.run_discover

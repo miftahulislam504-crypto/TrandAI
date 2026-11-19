@@ -308,13 +308,28 @@ class DisabledCategoryTests(unittest.TestCase):
         by_cat, _, _, _ = run_daraz.collect(a, self.CFG2, self.CATS2, only="beauty")
         self.assertEqual(list(by_cat), ["beauty"])
 
-    def test_shipped_config_has_four_disabled_categories_with_seeds(self):
+    def test_shipped_config_has_four_disabled_categories(self):
         cfgs = run_daraz.load_config()
         cats = {c["slug"]: c for c in cfgs[1]["categories"]}
         for slug in ("electronics", "beauty", "baby", "sports"):
             self.assertIs(cats[slug]["enabled"], False)
-            self.assertGreaterEqual(len(cfgs[0]["seeds"][slug]), 10)
-        self.assertTrue(all(cats[s]["enabled"] for s in ("fashion", "home", "kitchen")))
+            self.assertIn(slug, cfgs[0]["seeds"])
+        # বিউটি ও বেবির seed Discovery রাউন্ড ১-এ মিলেছে; ইলেকট্রনিক্স/স্পোর্টস রাউন্ড ২-এর অপেক্ষায়
+        self.assertGreaterEqual(len(cfgs[0]["seeds"]["beauty"]), 1)
+        self.assertGreaterEqual(len(cfgs[0]["seeds"]["baby"]), 1)
+        for slug in ("fashion", "home", "kitchen"):
+            self.assertTrue(cats[slug]["enabled"])
+            self.assertGreaterEqual(len(cfgs[0]["seeds"][slug]), 8)
+
+    def test_shipped_seeds_respect_daraz_robots(self):
+        """Daraz robots.txt /catalog/ (কীওয়ার্ড সার্চ) নিষিদ্ধ করেছে: শিপ করা seed-এ keyword টাইপ থাকা চলবে না।"""
+        seeds = run_daraz.load_config()[0]["seeds"]
+        for slug, lst in seeds.items():
+            for s in lst:
+                self.assertEqual(s.get("type"), "category", f"{slug}: {s}")
+                self.assertTrue(s["url"].startswith("https://www.daraz.com.bd/"))
+                self.assertNotIn("from=", s["url"])
+                self.assertNotIn("/catalog/", s["url"])
 
 
 class ImagePipelineTests(unittest.TestCase):
@@ -340,6 +355,23 @@ class ImagePipelineTests(unittest.TestCase):
         by = {r["external_id"]: r for r in patched}
         self.assertEqual(by["1"]["image_url"], "https://cdn/detail.jpg")
         self.assertNotIn("2", by)                        # নিজের ছবি আছে, ডিটেইল ছোঁয়নি
+
+
+
+class SmokeWarningTests(unittest.TestCase):
+    def _report(self, seed):
+        return {"client_stats": {"requests": 0, "ok": 0, "blocked": 0, "robots_skipped": 2, "errors": 0},
+                "diags": [{"category": "fashion", "seed": seed, "strategy": None, "found": 0, "total_results": None,
+                           "raw_keys": [], "notes": []}],
+                "errors": [], "coverage": {}, "sample_item": None, "product": None, "reviews": None}
+
+    def test_keyword_seed_triggers_old_config_warning(self):
+        md = run_daraz.smoke_markdown(self._report({"type": "keyword", "q": "panjabi"}))
+        self.assertIn("পুরনো কনফিগ", md)
+
+    def test_category_seed_has_no_warning(self):
+        md = run_daraz.smoke_markdown(self._report({"type": "category", "url": "https://www.daraz.com.bd/womens-sarees/"}))
+        self.assertNotIn("পুরনো কনফিগ", md)
 
 
 if __name__ == "__main__":
