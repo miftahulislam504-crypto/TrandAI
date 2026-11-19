@@ -25,6 +25,18 @@
         {
           "label": "reviews_json_candidate",
           "url": "https://my.daraz.com.bd/pdp/review/getReviewList?itemId=542322850&pageSize=5&filter=0&sort=0&pageNo=1"
+        },
+        {
+          "label": "home",
+          "url": "https://www.daraz.com.bd/"
+        },
+        {
+          "label": "category_ajax_candidate",
+          "url": "https://www.daraz.com.bd/small-kitchen-appliances/?ajax=true&page=1&sort=popularity"
+        },
+        {
+          "label": "category_ajax_candidate_2",
+          "url": "https://www.daraz.com.bd/cooking-appliances/?ajax=true&page=1"
         }
       ]
     },
@@ -40,6 +52,10 @@
         {
           "label": "product_page",
           "url": "https://cartup.com/product/kiam_h-10_infrared_cooker_29552044535632_xefnnl"
+        },
+        {
+          "label": "sitemap_index",
+          "url": "https://cartup.com/sitemap.xml"
         }
       ]
     },

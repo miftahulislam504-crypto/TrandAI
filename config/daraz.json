@@ -366,5 +366,6 @@
         "q": "protein shaker"
       }
     ]
-  }
+  },
+  "_robots_note": "অডিট (২০২৬-১১-১৮): Daraz robots.txt `/catalog/` নিষিদ্ধ করেছে, তাই type=keyword seed গুলো রান হলে RobotsDisallowed-এ বাদ যায়। ক্যাটাগরি URL (+ ajax=true) নিষিদ্ধ নয়। পরের অডিটে Daraz হোমপেজ ও ajax নমুনা দেখে keyword seed-এর বদলে আসল ক্যাটাগরি URL বসানো হবে। `/*from=` প্যারামিটার নিষিদ্ধ, URL-এ from= যোগ করা যাবে না।"
 }

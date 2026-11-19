@@ -129,8 +129,9 @@
 ## সোর্স সম্প্রসারণ (নতুন)
 - [x] ১৩টা সাইট অডিট তালিকায় ও `config/sources.json`-এ (ধরন ও পদ্ধতিসহ), `docs/SOURCES_ROADMAP.md`
 - [x] নতুন সাইটগুলোতে অডিট চালানো হয়েছে (ফল `docs/SOURCE_AUDIT.md`-এ)
-- [ ] Daraz লিস্টিংয়ের নতুন পথ (সার্চ নিষিদ্ধ): robots.txt ও sitemap দেখে ঠিক করা
-- [ ] Cartup adapter (`soldCount` আছে), তারপর Othoba
+- [x] Daraz robots.txt পড়া হয়েছে: `/catalog/` নিষিদ্ধ, ক্যাটাগরি URL ও ajax=true নিষিদ্ধ নয়
+- [ ] অডিট আবার চালানো (নতুন: Daraz হোম + ক্যাটাগরি ajax, Cartup sitemap), তারপর আসল ক্যাটাগরি seed বসানো
+- [ ] Cartup adapter: sitemap থেকে প্রোডাক্ট URL, প্রোডাক্ট পেজ থেকে দাম/রেটিং (query string নিষিদ্ধ, `soldCount` শুধু ফ্ল্যাশ সেলে)। তারপর Othoba
 
 ---
 
