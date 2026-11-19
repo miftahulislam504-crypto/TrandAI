@@ -6,8 +6,8 @@
       "name": "Daraz",
       "base_url": "https://www.daraz.com.bd",
       "phase": 1,
-      "status": "audit_partial",
-      "has_sold_count": null,
+      "status": "go",
+      "has_sold_count": true,
       "focus": [
         "fashion",
         "home",
@@ -15,7 +15,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "২০২৬-১১-১৮ অডিট: প্রোডাক্ট পেজ ও রিভিউ JSON ঠিক আছে (রিভিউয়ে রেটিং আছে, সোল্ড key নেই)। কিন্তু /catalog/ (সার্চ) robots-এ নিষিদ্ধ, তাই সার্চ-ভিত্তিক সংগ্রহ চলবে না। ক্যাটাগরি পেজের HTML-এ কার্ড নেই। লিস্টিং খোঁজার নতুন পথ ঠিক করতে robots.txt ও sitemap লাগবে"
+      "notes": "অডিট ২: ক্যাটাগরি পেজ + ?ajax=true robots-এ নিষিদ্ধ নয়, JSON দেয় (৪০ আইটেম/পেজ, `itemSoldCntShow` ৪০টার মধ্যে ৩৯টায়, দাম, রেটিং, রিভিউ সংখ্যা)। /catalog/ (সার্চ) নিষিদ্ধ, তাই কীওয়ার্ড seed বাদ; আসল ক্যাটাগরি slug দিয়ে চলবে। Category Discovery workflow slug খুঁজে দেবে"
     },
     {
       "id": "cartup",
@@ -31,7 +31,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "অডিট: 200, robots allowed, Next.js, `soldCount` key ও JSON-LD রেটিং আছে। নতুন সোর্সের মধ্যে সবচেয়ে ভালো। পরের adapter"
+      "notes": "অডিট ২: query string ও /search নিষিদ্ধ। সাইটম্যাপ ইনডেক্স আছে (sitemap-product-all.xml.gz, www.cartup.com হোস্টে); প্রোডাক্ট URL সেখান থেকে, দাম/রেটিং প্রোডাক্ট পেজে। `soldCount` শুধু ফ্ল্যাশ সেলের পণ্যে"
     },
     {
       "id": "othoba",

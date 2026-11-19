@@ -4,8 +4,8 @@
 
 | সোর্স | HTTP / robots | সোল্ড | রেটিং | সিদ্ধান্ত |
 |---|---|---|---|---|
-| Daraz | পেজ 200 allowed; `/catalog/` নিষিদ্ধ | নেই | রিভিউ JSON-এ আছে | আংশিক: লিস্টিং খোঁজার নতুন পথ দরকার |
-| Cartup | 200 allowed | **`soldCount` আছে** | আছে | Go (প্রথম নতুন adapter) |
+| Daraz | পেজ 200 allowed; `/catalog/` নিষিদ্ধ; **ক্যাটাগরি `?ajax=true` চলে** | **আছে (৩৯/৪০)** | আছে | Go: ক্যাটাগরি slug দিয়ে (Discovery workflow) |
+| Cartup | 200 allowed; query string নিষিদ্ধ; সাইটম্যাপ আছে | শুধু ফ্ল্যাশ সেলে | আছে | Go: সাইটম্যাপ → প্রোডাক্ট পেজ |
 | Othoba | 200 allowed | নেই | রিভিউ সংখ্যা | Go |
 | Bagdoom | 200 allowed | নেই | নেই | পরে |
 | AjkerDeal | ConnectTimeout | ? | ? | আবার চালিয়ে দেখা |
