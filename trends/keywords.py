@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import Iterable, Optional
 
 _SPLIT = re.compile(r"[^\w\u0980-\u09FF]+", re.UNICODE)
 
@@ -52,12 +52,20 @@ def match_entry(title: str, category: Optional[str], entries: list[dict]) -> Opt
     return best[1] if best else None
 
 
-def build_terms(cfg: dict, only_category: Optional[str] = None, use_bengali: Optional[bool] = None) -> list[dict]:
-    """সংগ্রহের শব্দ-তালিকা: [{keyword, lang, group_key, category}]।"""
+def build_terms(cfg: dict, only_category: Optional[str] = None, use_bengali: Optional[bool] = None,
+                enabled_categories: Optional[Iterable[str]] = None) -> list[dict]:
+    """সংগ্রহের শব্দ-তালিকা: [{keyword, lang, group_key, category}]।
+
+    enabled_categories দিলে (এবং only_category না দিলে) শুধু ওই ক্যাটাগরির entry ধরা হয়: বন্ধ ক্যাটাগরির শব্দে
+    Google-এর অনুরোধ ও ব্লকের ঝুঁকি খরচ হয় না। only_category নাম ধরে দিলে বন্ধ হলেও চলে (স্মোক টেস্টের জন্য)।
+    """
     bn = cfg["settings"]["use_bengali"] if use_bengali is None else use_bengali
+    allowed = None if (only_category or enabled_categories is None) else set(enabled_categories)
     out = []
     for e in cfg["entries"]:
         if only_category and e["category"] != only_category:
+            continue
+        if allowed is not None and e["category"] not in allowed:
             continue
         out.append({"keyword": e["q"], "lang": "en", "group_key": e["id"], "category": e["category"]})
         if bn and e.get("bn"):

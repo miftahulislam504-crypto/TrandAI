@@ -2,6 +2,7 @@
 import json
 import threading
 import unittest
+from pathlib import Path
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -332,6 +333,62 @@ class DisabledCategoryTests(unittest.TestCase):
                 self.assertNotIn("/catalog/", s["url"])
 
 
+class CategoryConfigConsistencyTests(unittest.TestCase):
+    """১৫ ক্যাটাগরির কনফিগ একে অপরের সাথে মিলছে কি না। ভুল হলে রান নিঃশব্দে ভুল ফল দিত (যেমন category_id ফাঁকা)।"""
+
+    ROOT = Path(__file__).resolve().parents[2]
+
+    def cfgs(self):
+        return run_daraz.load_config()
+
+    def test_fifteen_categories_with_unique_slugs(self):
+        slugs = [c["slug"] for c in self.cfgs()[1]["categories"]]
+        self.assertEqual(len(slugs), 15)
+        self.assertEqual(len(set(slugs)), 15)
+
+    def test_every_category_has_seed_key(self):
+        daraz, cats = self.cfgs()
+        for c in cats["categories"]:
+            self.assertIn(c["slug"], daraz["seeds"], c["slug"])
+        extra = set(daraz["seeds"]) - {c["slug"] for c in cats["categories"]}
+        self.assertEqual(extra, set(), "categories.json-এ নেই এমন ক্যাটাগরির seed")
+
+    def test_every_category_has_a_migration_row(self):
+        """runner category_id বের করে categories টেবিল থেকে; migration-এ সারি না থাকলে ফাঁকা থাকত।"""
+        sql = "\n".join(f.read_text(encoding="utf-8") for f in sorted((self.ROOT / "supabase" / "migrations").glob("*.sql")))
+        for c in self.cfgs()[1]["categories"]:
+            self.assertIn(f"('{c['slug']}',", sql, f"{c['slug']}: কোনো migration-এ categories সারি নেই")
+
+    def test_no_seed_url_shared_by_enabled_categories(self):
+        """একই URL দুই চালু ক্যাটাগরিতে থাকলে প্রথমটায় বসে, দ্বিতীয়টার টার্গেট নিঃশব্দে কম পড়ে।"""
+        daraz, cats = self.cfgs()
+        owner: dict[str, str] = {}
+        for c in cats["categories"]:
+            if c.get("enabled", True) is False:
+                continue
+            for sd in daraz["seeds"].get(c["slug"]) or []:
+                url = sd.get("url") or sd.get("q")
+                self.assertNotIn(url, owner, f"{url} একসাথে {owner.get(url)} ও {c['slug']}-এ চালু")
+                owner[url] = c["slug"]
+
+    def test_enabled_category_has_seeds(self):
+        daraz, cats = self.cfgs()
+        for c in cats["categories"]:
+            if c.get("enabled", True) is not False:
+                self.assertGreaterEqual(len(daraz["seeds"][c["slug"]]), 1, f"{c['slug']} চালু কিন্তু seed নেই")
+
+    def test_total_target_matches_enabled_sum(self):
+        from tools.capacity import check_total
+        self.assertIsNone(check_total(self.cfgs()[1]))
+
+    def test_duplicate_detector_catches_a_clash(self):
+        """উপরের শেয়ার-URL যাচাই সত্যিই ধরে কি না: বন্ধ ক্যাটাগরি চালু করলে fashion-এর সাথে সংঘাত বাধে।"""
+        daraz, cats = self.cfgs()
+        fashion = {s["url"] for s in daraz["seeds"]["fashion"]}
+        bags = {s["url"] for s in daraz["seeds"]["bags-footwear"]}
+        self.assertTrue(fashion & bags, "bags-footwear চালুর আগে fashion থেকে ওই URL সরাতে হবে")
+
+
 class ImagePipelineTests(unittest.TestCase):
     def test_listing_rows_carry_image_url_only_when_present(self):
         adapter = FakeAdapter({"saree": [item("1", image_url="https://cdn/a.jpg"), item("2")]})
@@ -372,6 +429,41 @@ class SmokeWarningTests(unittest.TestCase):
     def test_category_seed_has_no_warning(self):
         md = run_daraz.smoke_markdown(self._report({"type": "category", "url": "https://www.daraz.com.bd/womens-sarees/"}))
         self.assertNotIn("পুরনো কনফিগ", md)
+
+
+class MissingSecretsTests(unittest.TestCase):
+    def test_main_reports_missing_secrets_instead_of_crashing(self):
+        import os, tempfile
+        from pathlib import Path as P
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as d:
+            env = {k: v for k, v in os.environ.items() if k not in ("SUPABASE_URL", "SUPABASE_SERVICE_KEY")}
+            with mock.patch.dict(os.environ, env, clear=True), mock.patch.object(run_daraz, "OUT_DIR", P(d)):
+                code = run_daraz.main([])
+            self.assertEqual(code, 1)
+            md = (P(d) / "run-summary.md").read_text(encoding="utf-8")
+            self.assertIn("SUPABASE_SERVICE_KEY", md)
+            self.assertIn("dry_run", md)
+
+
+class ReviewsRobotsTests(unittest.TestCase):
+    def test_robots_blocked_reviews_are_a_note_not_an_error(self):
+        from scrapers.common.http import RobotsDisallowed
+
+        class NoReviews(FakeAdapter):
+            def fetch_reviews(self, ext, page=1, page_size=20):
+                self.review_pages.append((ext, page))
+                raise RobotsDisallowed("https://my.daraz.com.bd/pdp/review/getReviewList")
+
+        adapter = NoReviews({"saree": [item("1", review_count=3), item("2", review_count=5)]})
+        db = FakeDB()
+        summary = run_daraz.run_pipeline(db, adapter, CFG, CATS, NOW, detail_limit=0)
+        # (ফিক্সচারে home/kitchen seed-এ আইটেম নেই বলে অন্য ত্রুটি থাকতে পারে; রিভিউ নিয়ে কোনো ত্রুটি থাকবে না)
+        self.assertFalse([e for e in summary["errors"] if "রিভিউ" in e])
+        self.assertEqual(summary["reviews"], 0)
+        self.assertEqual(len(summary["notes"]), 1)
+        self.assertEqual(len(adapter.review_pages), 1)          # একবার চেষ্টা, তারপর বাকি সব বাদ
+        self.assertIn("নোট", run_daraz.run_markdown(summary))
 
 
 if __name__ == "__main__":

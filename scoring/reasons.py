@@ -92,7 +92,7 @@ def build_reasons(r, f: Features, gates: dict, provisional: Optional[str], cfg: 
     # ---- রেড ফ্ল্যাগ ও ব্যবসার দিক
     if gates.get("counterfeit") is False:
         cf = det.get("counterfeit") or {}
-        cands.append((95, f"⚠️ নকল/ডুপ্লিকেট অভিযোগ: {cf.get('of')}টি রিভিউয়ের মধ্যে {cf.get('n')}টায়"))
+        cands.append((95, f"সতর্কতা: নকল/ডুপ্লিকেট অভিযোগ: {cf.get('of')}টি রিভিউয়ের মধ্যে {cf.get('n')}টায়"))
     mg = det.get("margin") or {}
     if mg:
         if mg["margin_pct"] <= 0:
@@ -123,7 +123,7 @@ def build_reasons(r, f: Features, gates: dict, provisional: Optional[str], cfg: 
             word = "জোরালো" if v >= 65 else "দুর্বল"
             cands.append((abs(v - 50), f"বিজ্ঞাপনে বাজার-সমর্থন {word}: '{ad['keyword']}' শব্দে {facts}"))
         if ad.get("crowded"):
-            cands.append((55, f"📢 বিজ্ঞাপনে ভিড়: '{ad['keyword']}' শব্দে {facts}"))
+            cands.append((55, f"বিজ্ঞাপনে ভিড়: '{ad['keyword']}' শব্দে {facts}"))
 
     cands.sort(key=lambda x: -x[0])
     summary = [text for _, text in cands[:3]]

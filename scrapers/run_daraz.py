@@ -16,7 +16,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from scrapers.common.http import CircuitOpen, FetchError, PoliteClient
+from scrapers.common.http import RobotsDisallowed, CircuitOpen, FetchError, PoliteClient
 from scrapers.common.supabase_rest import SupabaseError, SupabaseREST
 from scrapers.daraz import parse
 from scrapers.daraz.adapter import DarazAdapter
@@ -144,7 +144,7 @@ def run_pipeline(db, adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, now
     run_id = db.insert("scrape_runs", [{"source_id": source_id, "started_at": now_iso}], returning=True)[0]["id"]
 
     summary: dict = {"run_id": run_id, "date": today, "listings": 0, "snapshots": 0, "details": 0,
-                     "reviews": 0, "errors": [], "circuit_open": False, "coverage": {}, "diags": []}
+                     "reviews": 0, "errors": [], "notes": [], "circuit_open": False, "coverage": {}, "diags": []}
     status = "failed"
     try:
         by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, only, False, max_pages)
@@ -223,6 +223,10 @@ def run_pipeline(db, adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, now
                         db.upsert("reviews", [{"listing_id": lid, **r} for r in revs],
                                   "listing_id,external_review_id")
                         summary["reviews"] += len(revs)
+                except RobotsDisallowed:
+                    # রিভিউ API-র হোস্টের robots.txt অনুমতি দেয়নি: ত্রুটি নয়, সিদ্ধান্ত। একবার জানিয়ে বাকি রিভিউ ধাপ বাদ
+                    summary["notes"].append("রিভিউ বাদ: রিভিউ API-র robots.txt অনুমতি দেয়নি (রেটিং গড়/সংখ্যা লিস্টিং থেকে আসছে)")
+                    break
                 except CircuitOpen as e:
                     summary["errors"].append(f"রিভিউ: {e}")
                     summary["circuit_open"] = True
@@ -309,6 +313,8 @@ def run_markdown(s: dict) -> str:
     if s["circuit_open"]:
         L.append("- রান মাঝপথে থেমেছে (টানা ব্লক)")
     L += ["", "| ফিল্ড | % |", "|---|---|"] + [f"| {f} | {c['pct']}% |" for f, c in s["coverage"].items()]
+    if s.get("notes"):
+        L += ["", "## নোট"] + [f"- {n}" for n in s["notes"]]
     if s["errors"]:
         L += ["", "## সমস্যা"] + [f"- {e}" for e in s["errors"][:30]]
     return "\n".join(L)
@@ -323,6 +329,18 @@ def write_outputs(name: str, data: dict, md: str) -> None:
         with open(summary_file, "a", encoding="utf-8") as f:
             f.write(md + "\n")
     print(md)
+
+
+def missing_secrets_markdown(err: str) -> str:
+    return "\n".join([
+        "# Daraz Daily: শুরু করা যায়নি", "",
+        f"কারণ: {err}", "",
+        "**সমাধান:** GitHub রিপো -> Settings -> Secrets and variables -> Actions -> New repository secret:",
+        "- `SUPABASE_URL` (Supabase প্রজেক্টের URL)",
+        "- `SUPABASE_SERVICE_KEY` (service_role key)",
+        "- `REVIEWER_HASH_SALT` (যেকোনো লম্বা র‍্যান্ডম লেখা)", "",
+        "ডাটাবেজ ছাড়া শুধু দেখতে চাইলে workflow চালানোর সময় `dry_run` টিক দিন।",
+    ])
 
 
 def main(argv=None) -> int:
@@ -351,7 +369,11 @@ def main(argv=None) -> int:
         write_outputs("dry-run-report", res, smoke_markdown(res))
         return 0 if items else 1
 
-    db = SupabaseREST.from_env()
+    try:
+        db = SupabaseREST.from_env()
+    except SupabaseError as e:
+        write_outputs("run-summary", {"status": "failed", "error": str(e)}, missing_secrets_markdown(str(e)))
+        return 1
     now = datetime.now(timezone.utc)
     summary = run_pipeline(db, adapter, daraz_cfg, cats_cfg, now, args.category, args.max_pages,
                            args.detail_limit, args.reviews_limit)

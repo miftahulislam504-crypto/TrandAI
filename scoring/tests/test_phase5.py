@@ -134,7 +134,7 @@ class CounterfeitTests(unittest.TestCase):
         r = run_hot(reviews=self.reviews(3))
         self.assertIs(r.reasons["gates"]["counterfeit"], False)
         self.assertEqual(r.tier, "mid")
-        self.assertTrue(r.reasons["summary"][0].startswith("⚠️ নকল"))
+        self.assertTrue(r.reasons["summary"][0].startswith("সতর্কতা: নকল"))
         self.assertIn("নকল/ডুপ্লিকেট", " ".join(r.reasons["notes"]))
 
     def test_single_complaint_is_below_threshold(self):

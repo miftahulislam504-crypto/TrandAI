@@ -17,7 +17,7 @@ on:
         type: boolean
         default: false
       category:
-        description: "শুধু এই ক্যাটাগরি (fashion / home / kitchen), ফাঁকা = সব"
+        description: "শুধু এই ক্যাটাগরি (বন্ধ ক্যাটাগরিও নাম ধরে চলে), ফাঁকা = চালু সব"
         required: false
         default: ""
       max_batches:

@@ -67,3 +67,47 @@ class DiscoverTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ShippedCandidatesTests(unittest.TestCase):
+    """Phase 9: config/daraz_candidates.json ১৫ ক্যাটাগরিকেই কভার করে ও প্রস্তাবের ক্রম ঠিক।"""
+    CFG = json.loads((Path(__file__).resolve().parents[2] / "config" / "daraz_candidates.json").read_text(encoding="utf-8"))
+    CATS = json.loads((Path(__file__).resolve().parents[2] / "config" / "categories.json").read_text(encoding="utf-8"))
+
+    def test_every_category_has_a_group(self):
+        for c in self.CATS["categories"]:
+            self.assertIn(c["slug"], self.CFG["group_keywords"], c["slug"])
+
+    def test_start_has_no_duplicates_and_fits_budget(self):
+        st = self.CFG["start"]
+        self.assertEqual(len(st), len(set(st)))
+        self.assertLessEqual(len(st), self.CFG["max_requests"])
+        self.assertGreater(self.CFG["max_requests"] - len(st), 50, "উপ-ক্যাটাগরি ঘোরার জন্য বাজেট থাকা দরকার")
+
+    def test_specific_groups_come_before_generic(self):
+        order = list(self.CFG["group_keywords"])
+        for specific in ("islamic", "baby", "bags-footwear", "watches-jewellery", "beauty"):
+            self.assertLess(order.index(specific), order.index("fashion"))
+        self.assertLess(order.index("beauty"), order.index("health-wellness"))   # beauty-health বিউটিতে বসবে
+
+    def test_propose_routes_new_categories(self):
+        found = {s: {"title": t, "total_results": 900} for s, t in {
+            "womens-hijab": "Hijab", "prayer-mats": "Prayer Mats", "beauty-health": "Beauty & Health",
+            "baby-bottle-tote-bags": "Baby Bottle Tote Bags", "backpacks": "Backpacks",
+            "mens-watches": "Men's Watches", "smart-watches": "Smart Watches", "honey": "Honey",
+            "helmets": "Helmets", "car-accessories": "Car Accessories", "carpets": "Carpets",
+            "womens-sarees": "Sarees"}.items()}
+        out = propose(found, self.CFG["group_keywords"], 300)
+        where = {r["url"].rstrip("/").rsplit("/", 1)[-1]: g for g, rows in out.items() for r in rows}
+        self.assertEqual(where["womens-hijab"], "islamic")
+        self.assertEqual(where["prayer-mats"], "islamic")
+        self.assertEqual(where["beauty-health"], "beauty")
+        self.assertEqual(where["baby-bottle-tote-bags"], "baby")
+        self.assertEqual(where["backpacks"], "bags-footwear")
+        self.assertEqual(where["mens-watches"], "watches-jewellery")
+        self.assertEqual(where["smart-watches"], "electronics")
+        self.assertEqual(where["honey"], "grocery")
+        self.assertEqual(where["helmets"], "automotive")
+        self.assertEqual(where["car-accessories"], "automotive")
+        self.assertEqual(where["carpets"], "home")             # "car" দিয়ে ভুল ধরা পড়ে না
+        self.assertEqual(where["womens-sarees"], "fashion")

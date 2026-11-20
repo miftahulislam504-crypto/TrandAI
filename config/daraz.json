@@ -179,7 +179,29 @@
         "url": "https://www.daraz.com.bd/baby-food-snacks/"
       }
     ],
-    "sports": []
+    "sports": [],
+    "bags-footwear": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-bags/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-sneakers/"
+      }
+    ],
+    "watches-jewellery": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/jewellery-fashion/"
+      }
+    ],
+    "mobile-accessories": [],
+    "islamic": [],
+    "health-wellness": [],
+    "gifts-lifestyle": [],
+    "grocery": [],
+    "automotive": []
   },
   "_robots_note": "Daraz robots.txt `/catalog/` নিষিদ্ধ, তাই কীওয়ার্ড seed সরানো হয়েছে (পুরনো তালিকা `_keyword_seeds_removed`-এ)। seed এখন Category Discovery-তে যাচাই-করা ক্যাটাগরি (২০২৬-১১-১৯)। electronics ও sports-এর slug এখনও মেলেনি, তাই খালি ও ক্যাটাগরি বন্ধ। `/*from=` প্যারামিটার নিষিদ্ধ, URL-এ from= যোগ করা যাবে না।",
   "_keyword_seeds_removed": {
@@ -279,5 +301,6 @@
       "cycling helmet",
       "protein shaker"
     ]
-  }
+  },
+  "_split_note": "womens-bags, mens-sneakers (bags-footwear) ও jewellery-fashion (watches-jewellery) এখনও fashion-এর seed-তেও আছে, কারণ নতুন ক্যাটাগরি বন্ধ; এখন fashion থেকে সরালে ওই প্রোডাক্টের রোজকার ট্র্যাকিং থেমে যেত। bags-footwear বা watches-jewellery চালুর সময় একই সাথে fashion থেকে ওই URL মুছতে হবে (নইলে প্রথম ক্যাটাগরিতেই বসে, টেস্ট ধরে)। খালি seed = Discovery রাউন্ড ২-এ যাচাই-করা slug মেলেনি; অনুমানে slug বসানো হয়নি।"
 }

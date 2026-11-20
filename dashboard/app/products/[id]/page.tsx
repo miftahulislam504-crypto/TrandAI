@@ -1,10 +1,13 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { rest, rpc } from "@/lib/supabase";
 import { num, taka, delta, rating, day } from "@/lib/format";
 import { FACTOR_LABEL, FACTOR_WEIGHT, OPTIONAL_FACTORS, TOPIC_BN, tierText } from "@/lib/tier";
+import { stripEmoji } from "@/lib/clean";
 import { saveAdChecks, deleteAdCheck } from "@/app/ads/actions";
+import { Icon } from "../../components/icons";
 import { toggleWatch } from "@/app/watch/actions";
 
 export const dynamic = "force-dynamic";
@@ -62,9 +65,9 @@ async function clearCost(formData: FormData) {
   revalidatePath(`/products/${listing}`);
 }
 
-function Spark({ values, label }: { values: (number | null)[]; label: string }) {
+function Spark({ values, label, note }: { values: (number | null)[]; label: string; note?: ReactNode }) {
   const pts = values.map((v, i) => ({ v, i })).filter((p): p is { v: number; i: number } => p.v !== null);
-  if (pts.length < 2) return <div className="box"><h3>{label}</h3><span className="muted">ইতিহাস জমছে…</span></div>;
+  if (pts.length < 2) return <div className="box"><h3>{label}</h3><span className="muted">ইতিহাস জমছে</span>{note}</div>;
   const min = Math.min(...pts.map((p) => p.v));
   const max = Math.max(...pts.map((p) => p.v));
   const span = max - min || 1;
@@ -74,10 +77,11 @@ function Spark({ values, label }: { values: (number | null)[]; label: string }) 
   return (
     <div className="box">
       <h3>{label}</h3>
-      <svg className="spark" viewBox="0 0 100 48" preserveAspectRatio="none" aria-label={label}>
-        <polyline points={d} fill="none" stroke="var(--accent)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+      <svg className="spark" viewBox="0 0 100 48" preserveAspectRatio="none" role="img" aria-label={`${label}: ${num(min)} থেকে ${num(last)}, সর্বোচ্চ ${num(max)}`}>
+        <polyline points={d} fill="none" strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" />
       </svg>
-      <div className="muted">{num(min)} → {num(last)} (সর্বোচ্চ {num(max)})</div>
+      <div className="muted">{num(min)} থেকে {num(last)} (সর্বোচ্চ {num(max)})</div>
+      {note}
     </div>
   );
 }
@@ -140,160 +144,175 @@ export default async function Product({ params, searchParams }: { params: { id: 
   const gs = g ? await googleSeries(g.group).catch(() => ({ weeks: [], values: [], keywords: [] })) : null;
   const dist = [5, 4, 3, 2, 1].map((s) => ({ s, c: reviews.filter((r) => r.stars === s).length }));
 
+  const SENT = (v: number) => (v > 0 ? "ইতিবাচক" : v < 0 ? "নেতিবাচক" : "নিরপেক্ষ");
+  const maxDist = Math.max(1, ...dist.map((d) => d.c));
+
   return (
     <>
-      <p><Link href="/">← তালিকায় ফিরুন</Link></p>
+      <Link href="/" className="back"><Icon name="left" size={16} />তালিকায় ফিরুন</Link>
       <h1>{p.title_raw || "(নাম নেই)"}</h1>
-      <p className="muted">
-        {p.category || "–"} · ব্র্যান্ড: {p.brand_raw || "–"} · সেলার: {p.seller_name || "–"} ·{" "}
-        <a href={p.url} target="_blank" rel="noopener noreferrer">Daraz-এ দেখুন ↗</a>
+      <p className="meta">
+        <span>{p.category || "–"}</span>
+        <span>ব্র্যান্ড: {p.brand_raw || "–"}</span>
+        <span>সেলার: {p.seller_name || "–"}</span>
+        <span><a href={p.url} target="_blank" rel="noopener noreferrer" className="extlink">Daraz-এ দেখুন<Icon name="external" size={14} /></a></span>
       </p>
       {p.canonical_product_id && watch !== null && (
-        <form action={toggleWatch} style={{ marginBottom: 10 }}>
+        <form action={toggleWatch} className="inline-form">
           <input type="hidden" name="cid" value={p.canonical_product_id} />
           <input type="hidden" name="on" value={watched ? "0" : "1"} />
           <input type="hidden" name="back" value={`/products/${id}`} />
-          {!watched && <input name="note" placeholder="নোট (ঐচ্ছিক)" maxLength={200} style={{ marginRight: 6 }} />}
-          <button type="submit" className="linkbtn">{watched ? "⭐ নজরে আছে, সরান" : "☆ নজরে রাখুন"}</button>
-          {watched && watch![0].note && <span className="muted"> 📝 {watch![0].note}</span>}
+          {!watched && <input name="note" placeholder="নোট (ঐচ্ছিক)" maxLength={200} aria-label="নোট (ঐচ্ছিক)" />}
+          <button type="submit" className="linkbtn touch"><Icon name="bookmark" size={16} filled={watched} />{watched ? "নজরে আছে, সরান" : "নজরে রাখুন"}</button>
+          {watched && watch![0].note && <span className="muted">নোট: {stripEmoji(watch![0].note)}</span>}
         </form>
       )}
-      {watchErr && <p className="down">{watchErr}</p>}
-      {prodAlerts.length > 0 && (
-        <div className="box" style={{ marginBottom: 10 }}>
-          <h3>সাম্প্রতিক অ্যালার্ট</h3>
-          {prodAlerts.map((a) => <div key={a.id} className="muted">{a.severity === "good" ? "🟢" : a.severity === "warn" ? "🔴" : "⚪"} {day(a.created_on)}: {a.title}</div>)}
-        </div>
-      )}
+      {watchErr && <div className="msg err" role="alert"><Icon name="alert" size={18} /><span>{watchErr}</span></div>}
 
-      {p.tier ? (
-        <div className="box" style={{ marginBottom: 12 }}>
-          <h3>স্কোর ({day(p.scored_on)})</h3>
-          <div>
-            <span className={`badge ${p.tier}`}>{tierText(p.tier, p.confidence, p.provisional_tier)}</span>{" "}
-            <b>{Math.round(p.score ?? 0)}</b>/100 · কনফিডেন্স {p.confidence}
-            {ad?.status === "ok" && ad.crowded ? <> · <span className="chip">📢 বিজ্ঞাপনে ভিড়</span></> : null}
-          </div>
-          {(p.reasons?.summary ?? []).map((s, i) => <div key={i}>• {s}</div>)}
-          {(p.reasons?.notes ?? []).map((s, i) => <div key={i} className="muted">– {s}</div>)}
-          <div style={{ marginTop: 8 }}>
-            {Object.keys(FACTOR_LABEL).filter((k) => !OPTIONAL_FACTORS.includes(k) || p.reasons?.factors?.[k] != null).map((k) => {
-              const v = p.reasons?.factors?.[k];
-              return (
-                <div key={k} className="bar">
-                  <span>{FACTOR_LABEL[k]} · {(wts[k] ?? 0) > 0 ? `ওজন ${wts[k]}` : "শুধু তথ্য (স্কোরে ওজন ০)"}</span>
-                  <div className="track"><div className="fill" style={{ width: `${v ?? 0}%`, opacity: v === null || v === undefined ? 0.15 : 1 }} /></div>
-                  <small className="muted">{v === null || v === undefined ? "ডেটা নেই" : Math.round(v)}</small>
+      <div className="stack">
+        {prodAlerts.length > 0 && (
+          <section className="box">
+            <h3>সাম্প্রতিক অ্যালার্ট</h3>
+            {prodAlerts.map((a) => (
+              <div key={a.id} className="check">
+                <div className="check-top">
+                  <span>{stripEmoji(a.title)}</span>
+                  <span className={`chip${a.severity === "warn" ? " danger" : ""}`}>{a.severity === "good" ? "ভালো খবর" : a.severity === "warn" ? "সতর্কতা" : "তথ্য"}</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <p className="muted">এই প্রোডাক্টের স্কোর এখনও হয়নি (ডেটা জমছে)।</p>
-      )}
+                <div className="muted">{day(a.created_on)}</div>
+              </div>
+            ))}
+          </section>
+        )}
 
-      {p.canonical_product_id && (
-        <div className="box" style={{ marginBottom: 12 }}>
-          <h3>আপনার কেনা দাম ও মার্জিন</h3>
-          {costs === null ? (
-            <p className="muted">কেনা দাম রাখতে Phase 5 migration (<code>20261115000000_phase5.sql</code>) চালান।</p>
-          ) : (
-            <>
-              {mg ? (
-                <div style={{ marginBottom: 8 }}>
-                  বাজারে সর্বনিম্ন ৳{mg.price} · খরচ ৳{mg.unit_cost + mg.extra_cost} → প্রতি পিসে প্রায় <b>৳{mg.profit}</b> লাভ,
-                  মার্জিন <b>{mg.margin_pct}%</b>{mg.roi_pct !== null ? <> (খরচের উপর {mg.roi_pct}%)</> : null}
-                  {mg.break_even_price !== null ? <> · ন্যূনতম বিক্রয়মূল্য ৳{mg.break_even_price}</> : null}
-                  <div className="muted" style={{ fontSize: 12 }}>
-                    ধরা হয়েছে: প্ল্যাটফর্ম ফি {mg.fee_pct}%, ফেরতের হার {mg.return_rate_pct}% (config/scoring.json-এ বদলানো যায়)।
+        {p.tier ? (
+          <section className="box">
+            <h3>স্কোর ({day(p.scored_on)})</h3>
+            <div className="scorehead">
+              <span className={`badge ${p.tier}`}>{tierText(p.tier, p.confidence, p.provisional_tier)}</span>
+              <span className="n">{Math.round(p.score ?? 0)}</span>
+              <span className="of">/ ১০০ · কনফিডেন্স {p.confidence}</span>
+              {ad?.status === "ok" && ad.crowded ? <span className="chip">বিজ্ঞাপনে ভিড়</span> : null}
+            </div>
+            {(p.reasons?.summary ?? []).length > 0 && <ul className="points">{(p.reasons?.summary ?? []).map((s, i) => <li key={i}>{stripEmoji(s)}</li>)}</ul>}
+            {(p.reasons?.notes ?? []).length > 0 && <ul className="points sub">{(p.reasons?.notes ?? []).map((s, i) => <li key={i}>{stripEmoji(s)}</li>)}</ul>}
+            <div className="factors">
+              {Object.keys(FACTOR_LABEL).filter((k) => !OPTIONAL_FACTORS.includes(k) || p.reasons?.factors?.[k] != null).map((k) => {
+                const v = p.reasons?.factors?.[k];
+                const has = v !== null && v !== undefined;
+                return (
+                  <div key={k} className="bar">
+                    <div className="bar-top"><span>{FACTOR_LABEL[k]}</span><b>{has ? Math.round(v as number) : "ডেটা নেই"}</b></div>
+                    <div className="track" role="img" aria-label={`${FACTOR_LABEL[k]}: ${has ? Math.round(v as number) : "ডেটা নেই"}`}><div className="fill" style={{ width: `${has ? v : 0}%` }} /></div>
+                    <small className="muted">{(wts[k] ?? 0) > 0 ? `ওজন ${wts[k]}` : "শুধু তথ্য (স্কোরে ওজন ০)"}</small>
                   </div>
-                </div>
-              ) : cost ? (
-                <p className="muted">মার্জিন পরের স্কোরিং রানে হিসাব হবে (Score Daily হাতে চালালে এখনই)।</p>
-              ) : (
-                <p className="muted">কেনা দাম দিলে মার্জিন ও ন্যূনতম বিক্রয়মূল্য দেখাবে, আর লোকসানের প্রোডাক্ট Best হবে না।</p>
-              )}
-              <form action={saveCost} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
-                <input type="hidden" name="cid" value={p.canonical_product_id} />
-                <input type="hidden" name="id" value={p.id} />
-                <label>কেনা দাম (৳)<br /><input name="unit" type="number" min="0" step="0.01" required defaultValue={cost?.unit_cost} style={{ width: 110 }} /></label>
-                <label>বাড়তি খরচ (৳)<br /><input name="extra" type="number" min="0" step="0.01" defaultValue={cost?.extra_cost ?? 0} style={{ width: 110 }} /></label>
-                <label>নোট<br /><input name="note" type="text" maxLength={200} defaultValue={cost?.note ?? ""} style={{ width: 160 }} /></label>
-                <button type="submit">সেভ</button>
-              </form>
-              {cost && (
-                <form action={clearCost} style={{ marginTop: 6 }}>
+                );
+              })}
+            </div>
+          </section>
+        ) : (
+          <div className="msg"><Icon name="info" size={18} /><span>এই প্রোডাক্টের স্কোর এখনও হয়নি (ডেটা জমছে)।</span></div>
+        )}
+
+        {p.canonical_product_id && (
+          <section className="box">
+            <h3>আপনার কেনা দাম ও মার্জিন</h3>
+            {costs === null ? (
+              <p className="muted">কেনা দাম রাখতে Phase 5 migration (<code>20261115000000_phase5.sql</code>) চালান।</p>
+            ) : (
+              <>
+                {mg ? (
+                  <div style={{ marginBottom: 12 }}>
+                    বাজারে সর্বনিম্ন ৳{mg.price} · খরচ ৳{mg.unit_cost + mg.extra_cost} → প্রতি পিসে প্রায় <b>৳{mg.profit}</b> লাভ,
+                    মার্জিন <b>{mg.margin_pct}%</b>{mg.roi_pct !== null ? <> (খরচের উপর {mg.roi_pct}%)</> : null}
+                    {mg.break_even_price !== null ? <> · ন্যূনতম বিক্রয়মূল্য ৳{mg.break_even_price}</> : null}
+                    <p className="hint">ধরা হয়েছে: প্ল্যাটফর্ম ফি {mg.fee_pct}%, ফেরতের হার {mg.return_rate_pct}% (<code>config/scoring.json</code>-এ বদলানো যায়)।</p>
+                  </div>
+                ) : cost ? (
+                  <p className="muted">মার্জিন পরের স্কোরিং রানে হিসাব হবে (Score Daily হাতে চালালে এখনই)।</p>
+                ) : (
+                  <p className="muted">কেনা দাম দিলে মার্জিন ও ন্যূনতম বিক্রয়মূল্য দেখাবে, আর লোকসানের প্রোডাক্ট Best হবে না।</p>
+                )}
+                <form action={saveCost} className="formrow cost">
                   <input type="hidden" name="cid" value={p.canonical_product_id} />
                   <input type="hidden" name="id" value={p.id} />
-                  <button type="submit">কেনা দাম মুছুন</button>
+                  <label className="field"><span>কেনা দাম (৳)</span><input name="unit" type="number" inputMode="decimal" min="0" step="0.01" required defaultValue={cost?.unit_cost} /></label>
+                  <label className="field"><span>বাড়তি খরচ (৳)</span><input name="extra" type="number" inputMode="decimal" min="0" step="0.01" defaultValue={cost?.extra_cost ?? 0} /></label>
+                  <label className="field wide"><span>নোট</span><input name="note" type="text" maxLength={200} defaultValue={cost?.note ?? ""} /></label>
+                  <button type="submit">সেভ</button>
                 </form>
-              )}
-              <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>বাড়তি খরচ = প্রতি পিসে প্যাকেজিং, ডেলিভারি ইত্যাদি।</div>
-            </>
-          )}
-        </div>
-      )}
+                {cost && (
+                  <form action={clearCost} className="actions">
+                    <input type="hidden" name="cid" value={p.canonical_product_id} />
+                    <input type="hidden" name="id" value={p.id} />
+                    <button type="submit" className="linkbtn">কেনা দাম মুছুন</button>
+                  </form>
+                )}
+                <p className="hint">বাড়তি খরচ = প্রতি পিসে প্যাকেজিং, ডেলিভারি ইত্যাদি।</p>
+              </>
+            )}
+          </section>
+        )}
 
-
-      {p.canonical_product_id && (
-        <div className="box" style={{ marginBottom: 12 }}>
-          <h3>Facebook Ads Library (হাতে-দেওয়া চেক)</h3>
-          {adsOk > 0 && <div style={{ marginBottom: 8 }}>✅ {adsOk}টা চেক সেভ হয়েছে। পরের Score Daily রানে স্কোরে দেখাবে।</div>}
-          {adsErr && <div style={{ marginBottom: 8, whiteSpace: "pre-wrap" }}>⚠️ সেভ হয়নি:{"\n"}{adsErr}</div>}
-          {ownAds === null ? (
-            <p className="muted">চেক রাখতে Phase 6 migration (<code>20261116000000_phase6.sql</code>) চালান।</p>
-          ) : (
-            <>
-              {ad?.status === "ok" ? (
-                <div style={{ marginBottom: 8 }}>
-                  &apos;{ad.keyword}&apos; শব্দে ({day(ad.observed_on)}, {ad.level === "product" ? "এই প্রোডাক্টের নিজস্ব চেক" : "প্রোডাক্টের ধরনের চেক, এই প্রোডাক্টের নিজস্ব নয়"}):{" "}
-                  <b>{num(ad.active_ads)}</b>টা সক্রিয় বিজ্ঞাপন{ad.advertisers !== null ? <>, কমপক্ষে <b>{num(ad.advertisers)}</b>টা আলাদা পেজ</> : null}
-                  {ad.longest_days !== null && ad.longest_days !== undefined ? <>, সবচেয়ে পুরনোটা <b>{ad.longest_days}</b> দিন ধরে চলছে</> : null}
-                  {ad.growth_basis === "history" && ad.growth_pct !== null && ad.growth_pct !== undefined ? <>, আগের চেকের চেয়ে বিজ্ঞাপন {pct(ad.growth_pct)}</> : null}
-                  {ad.growth_basis === "new_share" && ad.new_30d !== null ? <>, গত ৩০ দিনে নতুন {num(ad.new_30d)}টা</> : null}
-                  {ad.crowded ? <> · <b>📢 বিজ্ঞাপনে ভিড়</b> (প্রতিযোগিতা বেশি হতে পারে)</> : null}
-                </div>
-              ) : ad?.status === "stale" ? (
-                <p className="muted">শেষ চেক পুরনো ({day(ad.observed_on)}), স্কোরে ধরা হয়নি। নতুন চেক দিন।</p>
-              ) : (
-                <p className="muted">এই প্রোডাক্টে কোনো চেক লাগেনি। প্রোডাক্টের ধরনের শব্দ <Link href="/ads">/ads</Link>-এ দিলে মিলে গেলে লাগে, বা নিচে এই প্রোডাক্টের জন্যই সরাসরি দিন।</p>
-              )}
-              <form action={saveAdChecks} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
-                <input type="hidden" name="back" value={`/products/${p.id}`} />
-                <input type="hidden" name="cid" value={p.canonical_product_id} />
-                <label>শব্দ<br /><input name="keyword" type="text" required maxLength={80} defaultValue={ownAds[0]?.keyword ?? ""} style={{ width: 150 }} /></label>
-                <label>বিজ্ঞাপন সংখ্যা<br /><input name="ads" type="text" inputMode="numeric" required style={{ width: 90 }} /></label>
-                <label>বিজ্ঞাপনদাতা<br /><input name="advertisers" type="text" inputMode="numeric" style={{ width: 90 }} /></label>
-                <label>সবচেয়ে পুরনো<br /><input name="oldest" type="text" placeholder="3 Oct 2026" style={{ width: 110 }} /></label>
-                <label>নতুন (৩০ দিন)<br /><input name="new30" type="text" inputMode="numeric" style={{ width: 90 }} /></label>
-                <button type="submit">সেভ</button>
-              </form>
-              {ownAds.length > 0 && (
-                <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-                  এই প্রোডাক্টের নিজস্ব চেক:
-                  {ownAds.map((c) => (
-                    <form key={c.id} action={deleteAdCheck} style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 2 }}>
-                      <input type="hidden" name="back" value={`/products/${p.id}`} /><input type="hidden" name="id" value={c.id} />
-                      <span>{day(c.observed_on)} · &apos;{c.keyword}&apos; · {num(c.active_ads)} বিজ্ঞাপন{c.advertisers !== null ? ` · ${num(c.advertisers)} পেজ` : ""}</span>
-                      <button type="submit" aria-label="মুছুন">✕</button>
-                    </form>
-                  ))}
-                </div>
-              )}
-              <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-                কীভাবে চেক করবেন: <Link href="/ads">/ads</Link>-এর নির্দেশনা। &quot;বিজ্ঞাপনদাতা বেশি&quot; মানে বাজারের সমর্থনও, প্রতিযোগিতাও: তাই ভিড় ব্যাজ আলাদা, Best আটকায় না।
-              </div>
-            </>
-          )}
-        </div>
-      )}
+        {p.canonical_product_id && (
+          <section className="box">
+            <h3>Facebook Ads Library (হাতে-দেওয়া চেক)</h3>
+            {adsOk > 0 && <div className="msg ok" role="status"><Icon name="check" size={18} /><span>{num(adsOk)}টা চেক সেভ হয়েছে। পরের Score Daily রানে স্কোরে দেখাবে।</span></div>}
+            {adsErr && <div className="msg err" role="alert"><Icon name="alert" size={18} /><span>সেভ হয়নি:{"\n"}{adsErr}</span></div>}
+            {ownAds === null ? (
+              <p className="muted">চেক রাখতে Phase 6 migration (<code>20261116000000_phase6.sql</code>) চালান।</p>
+            ) : (
+              <>
+                {ad?.status === "ok" ? (
+                  <div style={{ marginBottom: 12 }}>
+                    &apos;{ad.keyword}&apos; শব্দে ({day(ad.observed_on)}, {ad.level === "product" ? "এই প্রোডাক্টের নিজস্ব চেক" : "প্রোডাক্টের ধরনের চেক, এই প্রোডাক্টের নিজস্ব নয়"}):{" "}
+                    <b>{num(ad.active_ads)}</b>টা সক্রিয় বিজ্ঞাপন{ad.advertisers !== null ? <>, কমপক্ষে <b>{num(ad.advertisers)}</b>টা আলাদা পেজ</> : null}
+                    {ad.longest_days !== null && ad.longest_days !== undefined ? <>, সবচেয়ে পুরনোটা <b>{ad.longest_days}</b> দিন ধরে চলছে</> : null}
+                    {ad.growth_basis === "history" && ad.growth_pct !== null && ad.growth_pct !== undefined ? <>, আগের চেকের চেয়ে বিজ্ঞাপন {pct(ad.growth_pct)}</> : null}
+                    {ad.growth_basis === "new_share" && ad.new_30d !== null ? <>, গত ৩০ দিনে নতুন {num(ad.new_30d)}টা</> : null}
+                    {ad.crowded ? <> <span className="chip">বিজ্ঞাপনে ভিড়</span> (প্রতিযোগিতা বেশি হতে পারে)</> : null}
+                  </div>
+                ) : ad?.status === "stale" ? (
+                  <p className="muted">শেষ চেক পুরনো ({day(ad.observed_on)}), স্কোরে ধরা হয়নি। নতুন চেক দিন।</p>
+                ) : (
+                  <p className="muted">এই প্রোডাক্টে কোনো চেক লাগেনি। প্রোডাক্টের ধরনের শব্দ <Link href="/ads">/ads</Link>-এ দিলে মিলে গেলে লাগে, বা নিচে এই প্রোডাক্টের জন্যই সরাসরি দিন।</p>
+                )}
+                <form action={saveAdChecks} className="formrow ads">
+                  <input type="hidden" name="back" value={`/products/${p.id}`} />
+                  <input type="hidden" name="cid" value={p.canonical_product_id} />
+                  <label className="field wide"><span>শব্দ</span><input name="keyword" type="text" required maxLength={80} defaultValue={ownAds[0]?.keyword ?? ""} /></label>
+                  <label className="field"><span>বিজ্ঞাপন সংখ্যা</span><input name="ads" type="text" inputMode="numeric" required /></label>
+                  <label className="field"><span>বিজ্ঞাপনদাতা</span><input name="advertisers" type="text" inputMode="numeric" /></label>
+                  <label className="field"><span>সবচেয়ে পুরনো</span><input name="oldest" type="text" placeholder="3 Oct 2026" /></label>
+                  <label className="field"><span>নতুন (৩০ দিন)</span><input name="new30" type="text" inputMode="numeric" /></label>
+                  <button type="submit">সেভ</button>
+                </form>
+                {ownAds.length > 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    <div className="muted">এই প্রোডাক্টের নিজস্ব চেক</div>
+                    {ownAds.map((c) => (
+                      <form key={c.id} action={deleteAdCheck} className="check-top" style={{ alignItems: "center", paddingTop: 6 }}>
+                        <input type="hidden" name="back" value={`/products/${p.id}`} /><input type="hidden" name="id" value={c.id} />
+                        <span className="muted">{day(c.observed_on)} · &apos;{c.keyword}&apos; · {num(c.active_ads)} বিজ্ঞাপন{c.advertisers !== null ? ` · ${num(c.advertisers)} পেজ` : ""}</span>
+                        <button type="submit" className="iconbtn" aria-label={`মুছুন: ${c.keyword}`}><Icon name="close" size={18} /></button>
+                      </form>
+                    ))}
+                  </div>
+                )}
+                <p className="hint">
+                  কীভাবে চেক করবেন: <Link href="/ads">/ads</Link>-এর নির্দেশনা। &quot;বিজ্ঞাপনদাতা বেশি&quot; মানে বাজারের সমর্থনও, প্রতিযোগিতাও: তাই ভিড় ব্যাজ আলাদা, Best আটকায় না।
+                </p>
+              </>
+            )}
+          </section>
+        )}
+      </div>
 
       <div className="grid2">
-        <div className="box"><h3>দাম</h3><b>{taka(p.price)}</b> {p.original_price ? <s className="muted">{taka(p.original_price)}</s> : null}</div>
-        <div className="box"><h3>রেটিং</h3><b>{rating(p.rating_avg)}</b> ({num(p.rating_count)} টি)</div>
-        <div className="box"><h3>মোট বিক্রি</h3><b>{num(p.sold_count)}</b></div>
-        <div className="box"><h3>৭ দিনে বিক্রি / রিভিউ</h3><b>{delta(p.sold_delta_7d)}</b> / {delta(p.review_delta_7d)}</div>
+        <div className="box"><h3>দাম</h3><span className="big">{taka(p.price)}</span> {p.original_price ? <s className="muted">{taka(p.original_price)}</s> : null}</div>
+        <div className="box"><h3>রেটিং</h3><span className="big">{rating(p.rating_avg)}</span> <span className="muted">({num(p.rating_count)}টি)</span></div>
+        <div className="box"><h3>মোট বিক্রি</h3><span className="big">{num(p.sold_count)}</span></div>
+        <div className="box"><h3>৭ দিনে বিক্রি / রিভিউ</h3><span className="big">{delta(p.sold_delta_7d)}</span> <span className="muted">/ {delta(p.review_delta_7d)}</span></div>
       </div>
 
       <div className="grid2">
@@ -301,34 +320,50 @@ export default async function Product({ params, searchParams }: { params: { id: 
         <Spark label="মোট বিক্রি" values={snaps.map((s) => s.sold_count)} />
         <Spark label="রিভিউ সংখ্যা" values={snaps.map((s) => s.review_count)} />
         {g && gs && (
-          <div>
-            <Spark label={`Google সার্চ: ${g.label} (সাপ্তাহিক)`} values={gs.values} />
-            <div className="muted" style={{ fontSize: 12, padding: "0 4px" }}>
-              {g.status === "ok"
-                ? <>গত {g.recent_weeks} সপ্তাহ বনাম আগের {g.prior_weeks}: {pct(g.momentum_pct)} · ১২ মাসের গড়ের তুলনায় {pct(g.position_pct)}
-                    {g.seasonal ? <> · মৌসুমি{g.yoy_pct !== null && g.yoy_pct !== undefined ? <>, গত বছরের তুলনায় {pct(g.yoy_pct)}</> : null}</> : null}</>
-                : <>এই কীওয়ার্ডের ডেটা স্কোরে ধরা হয়নি ({g.status === "stale" ? "পুরনো" : g.status === "short" ? "ডেটা কম বা নেই" : g.status})</>}
-              <br />প্রোডাক্টের ধরনের সার্চ, এই প্রোডাক্টের নিজস্ব নয়।
-            </div>
-          </div>
+          <Spark
+            label={`Google সার্চ: ${g.label} (সাপ্তাহিক)`}
+            values={gs.values}
+            note={
+              <p className="spark-note">
+                {g.status === "ok"
+                  ? <>গত {g.recent_weeks} সপ্তাহ বনাম আগের {g.prior_weeks}: {pct(g.momentum_pct)} · ১২ মাসের গড়ের তুলনায় {pct(g.position_pct)}
+                      {g.seasonal ? <> · মৌসুমি{g.yoy_pct !== null && g.yoy_pct !== undefined ? <>, গত বছরের তুলনায় {pct(g.yoy_pct)}</> : null}</> : null}</>
+                  : <>এই কীওয়ার্ডের ডেটা স্কোরে ধরা হয়নি ({g.status === "stale" ? "পুরনো" : g.status === "short" ? "ডেটা কম বা নেই" : g.status})</>}
+                <br />প্রোডাক্টের ধরনের সার্চ, এই প্রোডাক্টের নিজস্ব নয়।
+              </p>
+            }
+          />
         )}
         <div className="box">
-          <h3>সাম্প্রতিক রিভিউয়ের স্টার ({reviews.length}টা)</h3>
-          {dist.map((d) => <div key={d.s}>{d.s}★ {"█".repeat(d.c)} {d.c}</div>)}
+          <h3>সাম্প্রতিক রিভিউয়ের স্টার ({num(reviews.length)}টা)</h3>
+          {dist.map((d) => (
+            <div key={d.s} className="dist">
+              <span>{d.s} স্টার</span>
+              <div className="track" role="img" aria-label={`${d.s} স্টার: ${d.c}টা`}><div className="fill" style={{ width: `${(d.c / maxDist) * 100}%` }} /></div>
+              <span>{d.c}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <h2 style={{ fontSize: 16 }}>রিভিউ</h2>
-      {reviews.length === 0 && <p className="muted">এখনও কোনো রিভিউ সংগ্রহ হয়নি।</p>}
+      <h2>রিভিউ</h2>
+      {reviews.length === 0 && <div className="empty">এখনও কোনো রিভিউ সংগ্রহ হয়নি।</div>}
       {reviews.map((r, i) => (
         <div className="review" key={i}>
-          {r.stars}★ <span className="muted">{day(r.reviewed_at)}{r.suspected_fake ? " · সন্দেহজনক" : ""}{r.flags?.includes("counterfeit") ? " · ⚠️ নকল অভিযোগ" : ""}{r.sentiment != null ? ` · ${r.sentiment > 0 ? "🙂" : r.sentiment < 0 ? "🙁" : "😐"}` : ""}{r.topics && r.topics.length ? ` · ${r.topics.map((t) => TOPIC_BN[t] ?? t).join(", ")}` : ""}</span>
+          <div className="chips">
+            <b>{r.stars} স্টার</b>
+            <span className="muted">{day(r.reviewed_at)}</span>
+            {r.suspected_fake && <span className="chip">সন্দেহজনক</span>}
+            {r.flags?.includes("counterfeit") && <span className="chip danger">নকল অভিযোগ</span>}
+            {r.sentiment != null && <span className="chip">{SENT(r.sentiment)}</span>}
+            {(r.topics ?? []).map((t) => <span key={t} className="chip">{TOPIC_BN[t] ?? t}</span>)}
+          </div>
           <div>{r.body || ""}</div>
         </div>
       ))}
 
-      <h2 style={{ fontSize: 16 }}>দৈনিক স্ন্যাপশট</h2>
-      <div className="scroll">
+      <h2>দৈনিক স্ন্যাপশট</h2>
+      <div className="scroll tablewrap">
         <table>
           <thead><tr><th>তারিখ</th><th>দাম</th><th>বিক্রি</th><th>রিভিউ</th></tr></thead>
           <tbody>

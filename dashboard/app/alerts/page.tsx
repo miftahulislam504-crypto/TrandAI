@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { rest } from "@/lib/supabase";
-import { day } from "@/lib/format";
+import { num, day } from "@/lib/format";
+import { stripEmoji } from "@/lib/clean";
 import { inList } from "@/lib/watch";
 import { markAlertsSeen } from "@/app/watch/actions";
+import { Icon } from "../components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,8 @@ type A = {
   title: string; seen_at: string | null;
 };
 const KIND: Record<string, string> = { tier_change: "ট্যাগ বদল", score_move: "স্কোর সরেছে", price_move: "বাজারদর বদল", redflag: "নকল অভিযোগ" };
-const ICON: Record<string, string> = { good: "🟢", warn: "🔴", info: "⚪" };
+// রং নয়, লেখা দিয়ে: সতর্কতা শুধু লাল বর্ডারে, বাকিগুলো সাধারণ
+const SEV: Record<string, string> = { good: "ভালো খবর", warn: "সতর্কতা", info: "তথ্য" };
 const LIMIT = 100;
 
 export default async function Alerts({ searchParams }: { searchParams: Record<string, string | undefined> }) {
@@ -20,7 +23,12 @@ export default async function Alerts({ searchParams }: { searchParams: Record<st
     select: "id,canonical_product_id,kind,created_on,watched,severity,title,seen_at", order: "created_on.desc,id.desc", limit: String(LIMIT),
   }).catch(() => null);
   if (alerts === null) {
-    return (<><h1>🔔 অ্যালার্ট</h1><p className="muted">Phase 7 migration (<code>20261117000000_phase7.sql</code>) এখনও চালানো হয়নি।</p></>);
+    return (
+      <>
+        <h1>অ্যালার্ট</h1>
+        <div className="msg"><Icon name="info" size={18} /><span>Phase 7 migration (<code>20261117000000_phase7.sql</code>) এখনও চালানো হয়নি।</span></div>
+      </>
+    );
   }
   // অ্যালার্ট থেকে প্রোডাক্ট-পেজের লিংক (পেজ listing id ধরে): প্রতি canonical-এর ছোট id-র সক্রিয় listing
   const pids = [...new Set(alerts.map((a) => a.canonical_product_id))];
@@ -36,31 +44,37 @@ export default async function Alerts({ searchParams }: { searchParams: Record<st
 
   return (
     <>
-      <h1>🔔 অ্যালার্ট</h1>
-      {err && <p className="down">{err}</p>}
-      <p className="muted">
-        না-দেখা {unseen.length}টা · সর্বশেষ {alerts.length}টা দেখাচ্ছে · <Link href="/watchlist">⭐ ওয়াচলিস্ট</Link> · <a href="/export?kind=alerts">⬇ CSV</a>
+      <h1>অ্যালার্ট</h1>
+      <p className="lede">
+        না-দেখা {num(unseen.length)}টা · সর্বশেষ {num(alerts.length)}টা দেখানো হচ্ছে · <Link href="/watchlist">নজরে রাখা প্রোডাক্ট</Link>
       </p>
-      {unseen.length > 0 && (
-        <form action={markAlertsSeen}><button type="submit" className="linkbtn">✓ সব দেখা হয়েছে চিহ্নিত করুন</button></form>
-      )}
-      {alerts.length === 0 && <p className="muted">এখনও কোনো অ্যালার্ট নেই। Score Daily চলার পর, ট্যাগ বা স্কোর বদলালে এখানে আসবে।</p>}
+      {err && <div className="msg err" role="alert"><Icon name="alert" size={18} /><span>{err}</span></div>}
+      <div className="toolbar">
+        {unseen.length > 0
+          ? <form action={markAlertsSeen}><button type="submit" className="linkbtn touch"><Icon name="check" size={16} />সব দেখা হয়েছে চিহ্নিত করুন</button></form>
+          : <span className="muted">সব দেখা হয়েছে</span>}
+        <a href="/export?kind=alerts"><Icon name="download" size={16} />CSV ডাউনলোড</a>
+      </div>
+      {alerts.length === 0 && <div className="empty">এখনও কোনো অ্যালার্ট নেই। Score Daily চলার পর, ট্যাগ বা স্কোর বদলালে এখানে আসবে।</div>}
       {dates.map((d) => (
-        <div key={d}>
-          <h3 className="muted" style={{ margin: "14px 0 6px" }}>{day(d)}</h3>
+        <section key={d}>
+          <h2 className="dateh">{day(d)}</h2>
           {alerts.filter((a) => a.created_on === d).map((a) => {
             const lid = links.get(a.canonical_product_id);
+            const title = stripEmoji(a.title);
             return (
-              <div key={a.id} className="card" style={a.seen_at ? { opacity: 0.65 } : undefined}>
-                <div className="title">
-                  {ICON[a.severity] ?? "⚪"} {a.watched ? "⭐ " : ""}
-                  {lid ? <Link href={`/products/${lid}`}>{a.title}</Link> : a.title}
+              <div key={a.id} className={`card ${a.seen_at ? "seen" : "unseen"}`}>
+                <div className="item-tags">
+                  {!a.seen_at && <span className="badge best">নতুন</span>}
+                  <span className={`chip${a.severity === "warn" ? " danger" : ""}`}>{SEV[a.severity] ?? "তথ্য"}</span>
+                  {a.watched && <span className="chip">নজরে</span>}
                 </div>
-                <div className="muted">{KIND[a.kind] ?? a.kind}{a.seen_at ? "" : " · নতুন"}</div>
+                <div className="title">{lid ? <Link href={`/products/${lid}`}>{title}</Link> : title}</div>
+                <p className="why muted">{KIND[a.kind] ?? a.kind}</p>
               </div>
             );
           })}
-        </div>
+        </section>
       ))}
     </>
   );

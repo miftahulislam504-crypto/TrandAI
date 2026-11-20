@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { rest } from "@/lib/supabase";
 import { num, day } from "@/lib/format";
+import { stripEmoji } from "@/lib/clean";
 import { saveAdChecks, deleteAdCheck } from "./actions";
+import { Icon } from "../components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -34,19 +36,19 @@ export default async function Ads({ searchParams }: { searchParams: Record<strin
 
   return (
     <>
-      <p><Link href="/">← প্রোডাক্ট তালিকা</Link></p>
+      <Link href="/" className="back"><Icon name="left" size={16} />প্রোডাক্ট তালিকা</Link>
       <h1>Facebook Ads Library চেক</h1>
-      <p className="muted">
+      <p className="lede">
         Facebook-এ কতজন, কতদিন ধরে বিজ্ঞাপন চালাচ্ছে তা হাতে দেখে এখানে দিন। এটা &quot;বাজার-সমর্থন&quot;-এর একটা সংকেত, বিক্রির প্রমাণ নয়
         (Ads Library-তে খরচ বা ইম্প্রেশন নেই)। স্কোরে ওজন ডিফল্টে ০, তাই এখন শুধু কারণ ও ব্যাজে দেখায়।
       </p>
 
-      {ok > 0 && <div className="box" style={{ marginBottom: 12 }}>✅ {ok}টা চেক সেভ হয়েছে। পরের Score Daily রানে (বা হাতে চালালে এখনই) প্রোডাক্টে দেখাবে।</div>}
-      {err && <div className="box" style={{ marginBottom: 12, whiteSpace: "pre-wrap" }}>⚠️ সেভ হয়নি:{"\n"}{err}</div>}
+      {ok > 0 && <div className="msg ok" role="status"><Icon name="check" size={18} /><span>{num(ok)}টা চেক সেভ হয়েছে। পরের Score Daily রানে (বা হাতে চালালে এখনই) প্রোডাক্টে দেখাবে।</span></div>}
+      {err && <div className="msg err" role="alert"><Icon name="alert" size={18} /><span>সেভ হয়নি:{"\n"}{err}</span></div>}
 
       <details className="box" style={{ marginBottom: 12 }}>
         <summary>কীভাবে চেক করবেন (ফোনেই হয়)</summary>
-        <ol style={{ paddingLeft: 20, margin: "8px 0" }}>
+        <ol className="steps">
           <li>facebook.com/ads/library খুলুন। দেশ <b>Bangladesh</b>, ধরন <b>All ads</b> (সব বিজ্ঞাপন), স্ট্যাটাস <b>Active</b> বেছে নিন।</li>
           <li>প্রোডাক্টের ধরনের শব্দ লিখে খুঁজুন, যেমন <code>air fryer</code>। ইংরেজি আর বাংলা শব্দ আলাদা আলাদা চেক করা যায়।</li>
           <li><b>বিজ্ঞাপন সংখ্যা</b> = ফলাফলের সংখ্যা (উপরে যেমন &quot;~120 results&quot; দেখায়)। এটাই একমাত্র আবশ্যক ঘর।</li>
@@ -54,79 +56,83 @@ export default async function Ads({ searchParams }: { searchParams: Record<strin
           <li><b>সবচেয়ে পুরনো</b> = কার্ডগুলোর &quot;Started running on&quot; তারিখের সবচেয়ে আগেরটা (দিন/মাস/বছর বা 3 Oct 2026 লিখলেও চলে)।</li>
           <li><b>গত ৩০ দিনে নতুন</b> = ঐচ্ছিক, ফাঁকা রাখা যায়।</li>
         </ol>
-        <div className="muted" style={{ fontSize: 12 }}>
+        <p className="hint">
           Ads Library-র পেজের ভাষা ও লেআউট Facebook বদলায়, আমি আসল পেজ দেখে এই ধাপগুলো লিখিনি। কোনো ধাপ না মিললে জানান। শব্দ যত নির্দিষ্ট,
           সংকেত তত কাজের (&quot;air fryer&quot; ভালো, &quot;kitchen&quot; নয়)। একই শব্দ আবার চেক করলে (১৪ দিন বা বেশি পরে) বিজ্ঞাপন বাড়ছে কি কমছে তাও ধরা পড়ে।
-        </div>
+        </p>
       </details>
 
       {checks === null ? (
-        <p className="muted">চেক রাখতে Phase 6 migration (<code>20261116000000_phase6.sql</code>) চালান।</p>
+        <div className="msg"><Icon name="info" size={18} /><span>চেক রাখতে Phase 6 migration (<code>20261116000000_phase6.sql</code>) চালান।</span></div>
       ) : (
         <>
-          <div className="box" style={{ marginBottom: 12 }}>
-            <h3>একটা চেক দিন (প্রোডাক্টের ধরনের শব্দ)</h3>
-            <form action={saveAdChecks} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
-              <input type="hidden" name="back" value="/ads" />
-              <label>শব্দ<br /><input name="keyword" type="text" required maxLength={80} placeholder="air fryer" style={{ width: 150 }} /></label>
-              <label>বিজ্ঞাপন সংখ্যা<br /><input name="ads" type="text" inputMode="numeric" required style={{ width: 90 }} /></label>
-              <label>বিজ্ঞাপনদাতা<br /><input name="advertisers" type="text" inputMode="numeric" style={{ width: 90 }} /></label>
-              <label>সবচেয়ে পুরনো<br /><input name="oldest" type="text" placeholder="3 Oct 2026" style={{ width: 110 }} /></label>
-              <label>নতুন (৩০ দিন)<br /><input name="new30" type="text" inputMode="numeric" style={{ width: 90 }} /></label>
-              <button type="submit">সেভ</button>
-            </form>
+          <div className="stack">
+            <section className="box">
+              <h3>একটা চেক দিন (প্রোডাক্টের ধরনের শব্দ)</h3>
+              <form action={saveAdChecks} className="formrow ads">
+                <input type="hidden" name="back" value="/ads" />
+                <label className="field wide"><span>শব্দ</span><input name="keyword" type="text" required maxLength={80} placeholder="air fryer" /></label>
+                <label className="field"><span>বিজ্ঞাপন সংখ্যা</span><input name="ads" type="text" inputMode="numeric" required /></label>
+                <label className="field"><span>বিজ্ঞাপনদাতা</span><input name="advertisers" type="text" inputMode="numeric" /></label>
+                <label className="field"><span>সবচেয়ে পুরনো</span><input name="oldest" type="text" placeholder="3 Oct 2026" /></label>
+                <label className="field"><span>নতুন (৩০ দিন)</span><input name="new30" type="text" inputMode="numeric" /></label>
+                <button type="submit">সেভ</button>
+              </form>
+            </section>
+
+            <section className="box">
+              <h3>অনেকগুলো একসাথে (প্রতি লাইনে একটা)</h3>
+              <form action={saveAdChecks}>
+                <input type="hidden" name="back" value="/ads" />
+                <textarea name="bulk" rows={5} aria-label="অনেকগুলো চেক, প্রতি লাইনে একটা" placeholder={"air fryer | 120 | 14 | 3 Sep 2026 | 30\nপাঞ্জাবি | 85 | 20\nsaree | 25"} />
+                <p className="hint">
+                  ক্রম: শব্দ | বিজ্ঞাপন | বিজ্ঞাপনদাতা | সবচেয়ে পুরনোর তারিখ | নতুন-৩০ দিন। প্রথম দুটো আবশ্যক, বাকিগুলো বাদ দেওয়া বা &quot;-&quot; দেওয়া যায়।
+                  বাংলা অঙ্ক চলে। একবারে সর্বোচ্চ ৬০ লাইন।
+                </p>
+                <div className="actions"><button type="submit">সব সেভ</button></div>
+              </form>
+            </section>
           </div>
 
-          <div className="box" style={{ marginBottom: 12 }}>
-            <h3>অনেকগুলো একসাথে (প্রতি লাইনে একটা)</h3>
-            <form action={saveAdChecks}>
-              <input type="hidden" name="back" value="/ads" />
-              <textarea name="bulk" rows={5} placeholder={"air fryer | 120 | 14 | 3 Sep 2026 | 30\nপাঞ্জাবি | 85 | 20\nsaree | 25"} style={{ width: "100%", font: "inherit", padding: 8 }} />
-              <div className="muted" style={{ fontSize: 12, margin: "4px 0 8px" }}>
-                ক্রম: শব্দ | বিজ্ঞাপন | বিজ্ঞাপনদাতা | সবচেয়ে পুরনোর তারিখ | নতুন-৩০ দিন। প্রথম দুটো আবশ্যক, বাকিগুলো বাদ দেওয়া বা &quot;-&quot; দেওয়া যায়।
-                বাংলা অঙ্ক চলে। একবারে সর্বোচ্চ ৬০ লাইন।
-              </div>
-              <button type="submit">সব সেভ</button>
-            </form>
-          </div>
-
-          <h2 style={{ fontSize: 16 }}>সাম্প্রতিক চেক ({checks.length}টা)</h2>
-          {checks.length === 0 && <p className="muted">এখনও কোনো চেক নেই।</p>}
-          <div className="scroll">
-            <table>
-              <thead><tr><th>শব্দ</th><th>তারিখ</th><th>বিজ্ঞাপন</th><th>দাতা</th><th>পুরনো (দিন)</th><th>নতুন-৩০</th><th></th></tr></thead>
-              <tbody>
-                {checks.map((c) => {
-                  const age = daysBetween(c.observed_on, today);
-                  const t = c.canonical_product_id !== null ? titles.get(c.canonical_product_id) : undefined;
-                  return (
-                    <tr key={c.id}>
-                      <td>
-                        {c.keyword}
-                        {c.canonical_product_id !== null && (
-                          <div className="muted" style={{ fontSize: 11 }}>
-                            শুধু এই প্রোডাক্টের: {t ? <Link href={`/products/${t.id}`}>{(t.title_raw ?? "").slice(0, 40) || `#${c.canonical_product_id}`}</Link> : `#${c.canonical_product_id}`}
-                          </div>
-                        )}
-                        {c.note && <div className="muted" style={{ fontSize: 11 }}>{c.note}</div>}
-                      </td>
-                      <td>{day(c.observed_on)}{age > MAX_AGE ? <div className="muted" style={{ fontSize: 11 }}>পুরনো, স্কোরে ধরা হয় না</div> : null}</td>
-                      <td>{num(c.active_ads)}</td>
-                      <td>{num(c.advertisers)}</td>
-                      <td>{c.oldest_start ? num(daysBetween(c.oldest_start, c.observed_on)) : "–"}</td>
-                      <td>{num(c.new_30d)}</td>
-                      <td>
-                        <form action={deleteAdCheck}>
-                          <input type="hidden" name="back" value="/ads" /><input type="hidden" name="id" value={c.id} />
-                          <button type="submit" aria-label="মুছুন">✕</button>
-                        </form>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <h2>সাম্প্রতিক চেক ({num(checks.length)}টা)</h2>
+          {checks.length === 0 && <div className="empty">এখনও কোনো চেক নেই।</div>}
+          {checks.length > 0 && (
+            <div className="scroll tablewrap">
+              <table className="cards">
+                <thead><tr><th>শব্দ</th><th>তারিখ</th><th>বিজ্ঞাপন</th><th>দাতা</th><th>পুরনো (দিন)</th><th>নতুন-৩০</th><th /></tr></thead>
+                <tbody>
+                  {checks.map((c) => {
+                    const age = daysBetween(c.observed_on, today);
+                    const t = c.canonical_product_id !== null ? titles.get(c.canonical_product_id) : undefined;
+                    return (
+                      <tr key={c.id}>
+                        <td>
+                          {c.keyword}
+                          {c.canonical_product_id !== null && (
+                            <span className="sub">
+                              শুধু এই প্রোডাক্টের: {t ? <Link href={`/products/${t.id}`}>{(t.title_raw ?? "").slice(0, 40) || `#${c.canonical_product_id}`}</Link> : `#${c.canonical_product_id}`}
+                            </span>
+                          )}
+                          {c.note && <span className="sub">{stripEmoji(c.note)}</span>}
+                        </td>
+                        <td data-label="তারিখ">{day(c.observed_on)}{age > MAX_AGE ? <span className="sub">পুরনো, স্কোরে ধরা হয় না</span> : null}</td>
+                        <td data-label="বিজ্ঞাপন">{num(c.active_ads)}</td>
+                        <td data-label="দাতা">{num(c.advertisers)}</td>
+                        <td data-label="পুরনো (দিন)">{c.oldest_start ? num(daysBetween(c.oldest_start, c.observed_on)) : "–"}</td>
+                        <td data-label="নতুন-৩০">{num(c.new_30d)}</td>
+                        <td className="act">
+                          <form action={deleteAdCheck}>
+                            <input type="hidden" name="back" value="/ads" /><input type="hidden" name="id" value={c.id} />
+                            <button type="submit" className="iconbtn" aria-label={`মুছুন: ${c.keyword}`}><Icon name="close" size={18} /></button>
+                          </form>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
     </>

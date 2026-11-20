@@ -69,10 +69,30 @@ class MatchTests(unittest.TestCase):
 class TermTests(unittest.TestCase):
     def test_build_terms_default(self):
         t = build_terms(CFG)
-        self.assertEqual(len(t), 78)
+        self.assertEqual(len(t), 2 * len(E))                 # প্রতি entry-র ইংরেজি + বাংলা
         self.assertEqual(t[0], {"keyword": "panjabi", "lang": "en", "group_key": "panjabi", "category": "fashion"})
         self.assertEqual(t[1]["lang"], "bn")
         self.assertEqual({x["group_key"] for x in t}, {e["id"] for e in E})
+
+    def test_enabled_categories_skip_disabled(self):
+        t = build_terms(CFG, enabled_categories={"fashion", "home", "kitchen"})
+        self.assertEqual(len(t), 78)                        # আগের ৩ ক্যাটাগরির ৩৯ entry × ২
+        self.assertEqual({x["category"] for x in t}, {"fashion", "home", "kitchen"})
+        self.assertEqual(build_terms(CFG, enabled_categories=set()), [])
+
+    def test_named_category_overrides_enabled_filter(self):
+        """বন্ধ ক্যাটাগরি নাম ধরে চালালে (স্মোক টেস্ট) শব্দ আসে।"""
+        t = build_terms(CFG, only_category="islamic", enabled_categories={"fashion"})
+        self.assertEqual({x["category"] for x in t}, {"islamic"})
+        self.assertEqual(len(t), 10)                        # ৫ entry × ২
+
+    def test_new_category_titles_match(self):
+        self.assertEqual(m("Premium Muslin Prayer Mat Janamaz"), "prayer-mat")
+        self.assertEqual(m("Fast Charger 20W Type-C"), "mobile-charger")
+        self.assertEqual(m("Yoga Mat 6mm Non Slip"), "yoga-mat")
+        self.assertEqual(m("Smart Watch Series 8"), "smart-watch")      # "watch"-এর চেয়ে নির্দিষ্ট
+        self.assertEqual(m("Baby Diaper Pant Size L"), "baby-diaper")
+        self.assertIsNone(m("Air Cooler"))
 
     def test_english_only_and_category_filter(self):
         t = build_terms(CFG, only_category="home", use_bengali=False)

@@ -5,7 +5,31 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CATEGORIES = ("fashion", "home", "kitchen")
+_FALLBACK_CATEGORIES = ("fashion", "home", "kitchen")
+
+
+def _read_categories(root: Path = ROOT) -> list[dict]:
+    try:
+        return list(json.loads((root / "config" / "categories.json").read_text(encoding="utf-8"))["categories"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+
+
+def known_categories(root: Path = ROOT) -> tuple[str, ...]:
+    """config/categories.json-এর সব slug (হাতে লেখা তালিকা নয়, তাই নতুন ক্যাটাগরিতে এখানে বদলাতে হয় না)।"""
+    slugs = tuple(c["slug"] for c in _read_categories(root) if c.get("slug"))
+    return slugs or _FALLBACK_CATEGORIES
+
+
+def enabled_categories(root: Path = ROOT) -> set[str] | None:
+    """চালু (enabled != false) ক্যাটাগরির slug; categories.json পড়া না গেলে None (মানে: সবই ধরা)।"""
+    cats = _read_categories(root)
+    if not cats:
+        return None
+    return {c["slug"] for c in cats if c.get("slug") and c.get("enabled", True) is not False}
+
+
+CATEGORIES = known_categories()
 
 
 class TrendsConfigError(ValueError):

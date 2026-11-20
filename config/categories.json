@@ -1,5 +1,5 @@
 {
-  "_note": "ক্যাটাগরি ও প্রতিটার প্রোডাক্ট সংখ্যার লক্ষ্য (প্রস্তাব, বদলানো যাবে)। enabled: false হলে রোজকার রানে ধরা হয় না (--category দিয়ে নাম ধরে চালালে চলে, চালু করার আগে স্মোক টেস্টের জন্য)। চালু করার আগে `python tools/capacity.py` চালিয়ে GitHub Actions-এর মিনিট দেখে নিন। সোর্সভিত্তিক seeds config/daraz.json-এ। total_target_products = চালু ক্যাটাগরির লক্ষ্যের যোগফল (tools/capacity.py যাচাই করে)।",
+  "_note": "ক্যাটাগরি ও প্রতিটার প্রোডাক্ট সংখ্যার লক্ষ্য (প্রস্তাব, বদলানো যাবে)। enabled: false হলে রোজকার রানে ও সাপ্তাহিক Trends-এ ধরা হয় না (--category দিয়ে নাম ধরে চালালে চলে, চালু করার আগে স্মোক টেস্টের জন্য)। চালু করার আগে `python tools/capacity.py` চালিয়ে GitHub Actions-এর মিনিট দেখে নিন। seeds config/daraz.json-এ, Trends কীওয়ার্ড config/trends.json-এ। total_target_products = চালু ক্যাটাগরির লক্ষ্যের যোগফল (tools/capacity.py যাচাই করে)। নতুন ক্যাটাগরি যোগ করলে supabase/migrations/-এ categories সারিও যোগ করতে হয় (টেস্ট এটা ধরে)।",
   "total_target_products": 450,
   "categories": [
     {
@@ -42,6 +42,54 @@
       "slug": "sports",
       "name": "স্পোর্টস ও ফিটনেস",
       "target_products": 80,
+      "enabled": false
+    },
+    {
+      "slug": "mobile-accessories",
+      "name": "মোবাইল অ্যাক্সেসরিজ",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "bags-footwear",
+      "name": "ব্যাগ ও জুতা",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "islamic",
+      "name": "ইসলামিক পণ্য",
+      "target_products": 100,
+      "enabled": false
+    },
+    {
+      "slug": "health-wellness",
+      "name": "হেলথ ও ওয়েলনেস",
+      "target_products": 80,
+      "enabled": false
+    },
+    {
+      "slug": "watches-jewellery",
+      "name": "ঘড়ি ও গয়না",
+      "target_products": 80,
+      "enabled": false
+    },
+    {
+      "slug": "gifts-lifestyle",
+      "name": "গিফট ও লাইফস্টাইল",
+      "target_products": 80,
+      "enabled": false
+    },
+    {
+      "slug": "grocery",
+      "name": "গ্রোসারি",
+      "target_products": 80,
+      "enabled": false
+    },
+    {
+      "slug": "automotive",
+      "name": "অটোমোটিভ",
+      "target_products": 60,
       "enabled": false
     }
   ]

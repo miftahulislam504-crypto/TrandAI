@@ -73,6 +73,20 @@ def go(db, client, **kw):
 
 
 class RunTests(unittest.TestCase):
+    def test_disabled_categories_not_collected(self):
+        db, client = FakeDB(), FakeClient()
+        o, _ = go(db, client, enabled_categories={"home"})
+        self.assertEqual(o["terms_total"], 24)              # শুধু home: ১২ entry × ২
+        kws = {r["keyword"] for r in db.t["trend_keywords"]}
+        self.assertIn("curtain", kws)
+        self.assertNotIn("saree", kws)
+        self.assertNotIn("yoga mat", kws)
+
+    def test_named_disabled_category_still_runs(self):
+        db, client = FakeDB(), FakeClient()
+        o, _ = go(db, client, only_category="sports", enabled_categories={"home"}, do_seasonality=False)
+        self.assertEqual(o["terms_total"], 16)              # ৮ entry × ২
+
     def test_full_run_writes_keywords_points_and_seasonality(self):
         db, client = FakeDB(), FakeClient()
         o, _ = go(db, client, only_category="home")

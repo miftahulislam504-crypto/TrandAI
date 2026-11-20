@@ -85,7 +85,7 @@ def redflag(cur: Score, prev: Optional[Score], cfg: dict, names: dict[int, str])
     need = cfg["redflag"]["min_count"]
     if cur.counterfeit_n < need or (prev is not None and prev.counterfeit_n >= need):
         return None
-    title = f"{_name(names, cur.pid)}: ⚠️ নকল/ফেক অভিযোগ ({cur.counterfeit_n}টা রিভিউয়ে)"
+    title = f"{_name(names, cur.pid)}: সতর্কতা, নকল/ফেক অভিযোগ ({cur.counterfeit_n}টা রিভিউয়ে)"
     return _row(cur.pid, "redflag", cur.scored_on, True, "warn", title, {"counterfeit_reviews": cur.counterfeit_n})
 
 

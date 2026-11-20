@@ -1,7 +1,7 @@
 name: Daraz Category Discovery
 
 # Daraz-এর আসল ক্যাটাগরি slug খুঁজে seed প্রস্তাব করে। DB লাগে না।
-# Actions ট্যাব -> Daraz Category Discovery -> Run workflow। ১০-১৫ মিনিট লাগতে পারে।
+# Actions ট্যাব -> Daraz Category Discovery -> Run workflow। ২০-৩০ মিনিট লাগতে পারে (২৪০ রিকোয়েস্ট)।
 on:
   workflow_dispatch:
 
@@ -11,7 +11,7 @@ permissions:
 jobs:
   discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

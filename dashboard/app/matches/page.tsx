@@ -2,6 +2,8 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { rest, rpc } from "@/lib/supabase";
 import { num, taka, rating } from "@/lib/format";
+import { stripEmoji } from "@/lib/clean";
+import { Icon } from "../components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -41,16 +43,19 @@ function imageNote(d: number | null | undefined): string | null {
 
 function Side(p: { label: string; source: string; title: string | null; url: string | null; price: number | null; rating: number | null; rc: number | null; sold: number | null; canonical: number | null; image: string | null }) {
   return (
-    <div style={{ flex: 1, minWidth: 240, display: "flex", gap: 10 }}>
+    <div className="side">
       {p.image && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.image} alt="" width={96} height={96} loading="lazy" referrerPolicy="no-referrer"
-          style={{ objectFit: "contain", background: "#f4f4f4", borderRadius: 6, flex: "none" }} />
+        <img src={p.image} alt="" width={96} height={96} loading="lazy" referrerPolicy="no-referrer" className="thumb" />
       )}
-      <div style={{ minWidth: 0 }}>
-      <div className="muted" style={{ fontSize: 12 }}>{p.label} · {p.source} · প্রোডাক্ট #{p.canonical ?? "–"}</div>
-      <div style={{ margin: "4px 0" }}>{p.url ? <a href={p.url} target="_blank" rel="noreferrer noopener">{p.title ?? "(নাম নেই)"}</a> : p.title ?? "(নাম নেই)"}</div>
-      <div className="muted" style={{ fontSize: 13 }}>{taka(p.price)} · ★ {rating(p.rating)} ({num(p.rc)}) · বিক্রি {num(p.sold)}</div>
+      <div className="side-body">
+        <div className="muted" style={{ fontSize: 12 }}>{p.label} · {p.source} · প্রোডাক্ট #{p.canonical ?? "–"}</div>
+        <div className="ttl">
+          {p.url
+            ? <a href={p.url} target="_blank" rel="noreferrer noopener" className="extlink">{p.title ?? "(নাম নেই)"}<Icon name="external" size={14} /></a>
+            : p.title ?? "(নাম নেই)"}
+        </div>
+        <div className="muted">{taka(p.price)} · রেটিং {rating(p.rating)} ({num(p.rc)}) · বিক্রি {num(p.sold)}</div>
       </div>
     </div>
   );
@@ -66,42 +71,50 @@ export default async function Matches({ searchParams }: { searchParams: Record<s
 
   return (
     <>
-      <p><Link href="/">← প্রোডাক্ট তালিকা</Link></p>
-      <h1>একই প্রোডাক্ট কি না? (রিভিউ কিউ)</h1>
-      <p className="muted">
-        সিস্টেম নিশ্চিত হতে পারেনি, এমন জোড়া। <b>এক প্রোডাক্ট</b> চাপলে দুটোর বিক্রি ও রিভিউ যোগ হয়ে একটা প্রোডাক্ট হবে।
-        <b> আলাদা</b> চাপলে জোড়াটা চিরতরে বাদ, সিস্টেম আর নিজে মেলাবে না। মাপ, ওজন, সংখ্যা বা ব্র্যান্ড আলাদা হলে "আলাদা" দিন।
+      <Link href="/" className="back"><Icon name="left" size={16} />প্রোডাক্ট তালিকা</Link>
+      <h1>একই প্রোডাক্ট কি না?</h1>
+      <p className="lede">
+        রিভিউ কিউ: সিস্টেম নিশ্চিত হতে পারেনি, এমন জোড়া। <b>এক প্রোডাক্ট</b> চাপলে দুটোর বিক্রি ও রিভিউ যোগ হয়ে একটা প্রোডাক্ট হবে।
+        <b> আলাদা</b> চাপলে জোড়াটা চিরতরে বাদ, সিস্টেম আর নিজে মেলাবে না। মাপ, ওজন, সংখ্যা বা ব্র্যান্ড আলাদা হলে &quot;আলাদা&quot; দিন।
         রঙ বা সাইজ আলাদা হলে ফ্যাশনে তা একই প্রোডাক্টের ভ্যারিয়েন্ট ধরা হয়।
       </p>
-      {shown.length === 0 && <p>কিউ খালি। 🎉</p>}
-      {shown.map((r) => (
-        <div key={r.id} className="card" style={{ margin: "12px 0", padding: 12, border: "1px solid #ddd", borderRadius: 8 }}>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-            <Side label="ক" source={r.a_source} title={r.a_title} url={r.a_url} price={r.a_price} rating={r.a_rating} rc={r.a_rating_count} sold={r.a_sold} canonical={r.a_canonical} image={r.a_image} />
-            <Side label="খ" source={r.b_source} title={r.b_title} url={r.b_url} price={r.b_price} rating={r.b_rating} rc={r.b_rating_count} sold={r.b_sold} canonical={r.b_canonical} image={r.b_image} />
+      {shown.length === 0 && <div className="empty">কিউ খালি। সব জোড়ার সিদ্ধান্ত হয়ে গেছে।</div>}
+      {shown.map((r) => {
+        const img = imageNote(r.evidence?.image_dist);
+        const note = r.evidence?.note ? NOTES[r.evidence.note] ?? stripEmoji(r.evidence.note) : null;
+        return (
+          <div key={r.id} className="card">
+            <div className="item-top">
+              <div className="pair" style={{ flex: 1, minWidth: 0 }}>
+                <Side label="ক" source={r.a_source} title={r.a_title} url={r.a_url} price={r.a_price} rating={r.a_rating} rc={r.a_rating_count} sold={r.a_sold} canonical={r.a_canonical} image={r.a_image} />
+                <Side label="খ" source={r.b_source} title={r.b_title} url={r.b_url} price={r.b_price} rating={r.b_rating} rc={r.b_rating_count} sold={r.b_sold} canonical={r.b_canonical} image={r.b_image} />
+              </div>
+              <div className="score"><b>{Math.round(r.score * 100)}%</b><span>মিল</span></div>
+            </div>
+            <div className="evidence">
+              <div className="chips">
+                {r.evidence?.title_sim !== undefined && <span className="chip">নামের মিল {Math.round(r.evidence.title_sim * 100)}%</span>}
+                {r.evidence?.price_ratio != null && <span className="chip">দামের অনুপাত {Math.round(r.evidence.price_ratio * 100)}%</span>}
+                {r.evidence?.code_match && <span className="chip">মডেল কোড মিলেছে</span>}
+                {img && <span className="chip">{img}</span>}
+                {r.evidence?.same_source && <span className="chip">একই সাইট (ভিন্ন সেলার হতে পারে)</span>}
+                {r.evidence?.shared && r.evidence.shared.length > 0 && <span className="chip">মিলে যাওয়া শব্দ: {r.evidence.shared.slice(0, 6).join(", ")}</span>}
+                {note && <span className="chip danger">{note}</span>}
+              </div>
+            </div>
+            <form action={decide} className="actions">
+              <input type="hidden" name="id" value={r.id} />
+              <button type="submit" name="accept" value="1">এক প্রোডাক্ট</button>
+              <button type="submit" name="accept" value="0" className="linkbtn">আলাদা</button>
+            </form>
           </div>
-          <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
-            মিল {Math.round(r.score * 100)}%
-            {r.evidence?.title_sim !== undefined && <> · নামের মিল {Math.round(r.evidence.title_sim * 100)}%</>}
-            {r.evidence?.price_ratio != null && <> · দামের অনুপাত {Math.round(r.evidence.price_ratio * 100)}%</>}
-            {r.evidence?.code_match && <> · মডেল কোড মিলেছে</>}
-            {imageNote(r.evidence?.image_dist) && <> · 🖼 {imageNote(r.evidence?.image_dist)}</>}
-            {r.evidence?.same_source && <> · একই সাইট (ভিন্ন সেলার হতে পারে)</>}
-            {r.evidence?.shared && r.evidence.shared.length > 0 && <> · মিলে যাওয়া শব্দ: {r.evidence.shared.slice(0, 6).join(", ")}</>}
-            {r.evidence?.note && <> · ⚠️ {NOTES[r.evidence.note] ?? r.evidence.note}</>}
-          </div>
-          <form action={decide} style={{ marginTop: 8, display: "flex", gap: 8 }}>
-            <input type="hidden" name="id" value={r.id} />
-            <button type="submit" name="accept" value="1">✓ এক প্রোডাক্ট</button>
-            <button type="submit" name="accept" value="0">✗ আলাদা</button>
-          </form>
-        </div>
-      ))}
-      <p>
-        {page > 1 && <Link href={`/matches?page=${page - 1}`}>← আগের</Link>}
-        {page > 1 && more && " · "}
-        {more && <Link href={`/matches?page=${page + 1}`}>পরের →</Link>}
-      </p>
+        );
+      })}
+      <nav className="pager" aria-label="পেজ">
+        {page > 1 ? <Link href={`/matches?page=${page - 1}`}><Icon name="left" size={16} />আগের</Link> : <span />}
+        <span className="muted">পেজ {page}</span>
+        {more ? <Link href={`/matches?page=${page + 1}`}>পরের<Icon name="right" size={16} /></Link> : <span />}
+      </nav>
     </>
   );
 }

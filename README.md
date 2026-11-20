@@ -36,7 +36,8 @@ market-research/
 │   ├── PHASE3.md               # Phase 3 গাইড: Google Trends কীভাবে কাজ করে, স্মোক টেস্ট, anchor
 │   ├── PHASE4.md               # Phase 4 গাইড: ম্যাচিং কীভাবে কাজ করে, রিভিউ কিউ, ভুল মার্জ ফেরানো
 │   ├── PHASE6.md               # Phase 6 গাইড: Facebook Ads Library চেক কীভাবে দেবেন, স্কোরে প্রভাব, স্বয়ংক্রিয় সংগ্রহের সিদ্ধান্ত
-│   └── PHASE7.md               # Phase 7 গাইড: ওয়াচলিস্ট, অ্যালার্ট, Telegram, ব্যাকটেস্ট, CSV, Data Health, নতুন ক্যাটাগরি
+│   ├── PHASE7.md               # Phase 7 গাইড: ওয়াচলিস্ট, অ্যালার্ট, Telegram, ব্যাকটেস্ট, CSV, Data Health, নতুন ক্যাটাগরি
+│   └── PHASE9.md               # Phase 9 গাইড: ১৫ ক্যাটাগরির অবস্থা, Discovery রাউন্ড ২, ক্যাটাগরি চালুর নিয়ম
 ├── scrapers/                   # HTTP ক্লায়েন্ট, Daraz adapter, রান, audit, ৫৮টা টেস্ট
 ├── scoring/                    # ইঞ্জিন, ট্যাগ, ব্যাখ্যা, মার্জিন/প্রতিযোগিতা, Ads Library সংকেত (ads.py), রানার, Google অংশ, ১৪৩টা টেস্ট
 ├── reviewintel/                # Phase 5: রিভিউ বিশ্লেষণ (নকল অভিযোগ, সন্দেহজনক রিভিউ, Groq সেন্টিমেন্ট ও key-পুল), ৫১টা টেস্ট
@@ -55,14 +56,15 @@ market-research/
 │   ├── 20261114000000_phase4b.sql  # ছবির URL ও হ্যাশের কলাম, match_queue-তে ছবি
 │   ├── 20261115000000_phase5.sql   # reviews.flags, product_costs (কেনা দাম) ও দুটো ফাংশন
 │   ├── 20261116000000_phase6.sql   # ad_checks (Ads Library হাতে-দেওয়া চেক) ও দুটো ফাংশন
-│   └── 20261117000000_phase7.sql   # watchlist, alerts, get_data_health, মার্জের ঘাটতি ঠিক, নতুন ক্যাটাগরির সারি
+│   ├── 20261117000000_phase7.sql   # watchlist, alerts, get_data_health, মার্জের ঘাটতি ঠিক, নতুন ক্যাটাগরির সারি
+│   └── 20261120000000_phase9.sql   # Phase 9: আরও ৮টা ক্যাটাগরির সারি (মোট ১৫)
 └── dashboard/                  # Next.js ড্যাশবোর্ড (Vercel-এ)
 ```
 
 ## এখন কী করবেন
 
 1. রিপোতে ZIP-এর ফাইল পুশ করুন (`.github/workflows/` পাথ ঠিক আছে কি না দেখুন)।
-2. Supabase-এ নয়টা migration পরপর চালান (নতুন: `20261117000000_phase7.sql`)।
+2. Supabase-এ দশটা migration পরপর চালান (নতুন: `20261120000000_phase9.sql`)।
 3. Actions → **Daraz Smoke Test** চালিয়ে Summary আমাকে পাঠান। আসল Daraz-এর ডেটার গঠন এখানেই প্রথম যাচাই হবে। বিস্তারিত: [docs/PHASE1.md](docs/PHASE1.md)
 4. ঠিক থাকলে GitHub Secrets দিয়ে **Daraz Daily** চালু করুন, ড্যাশবোর্ড Vercel-এ ডিপ্লয় করুন।
 5. Actions → **Trends Smoke Test** চালিয়ে Summary আমাকে পাঠান (৪২৯ এলেও পাঠান)। বিস্তারিত: [docs/PHASE3.md](docs/PHASE3.md)

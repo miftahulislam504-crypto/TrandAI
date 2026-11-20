@@ -104,7 +104,35 @@ class SeasonalityTests(unittest.TestCase):
 
 class ConfigTests(unittest.TestCase):
     def test_shipped_config_is_valid(self):
-        self.assertEqual(len(CFG["entries"]), 39)
+        self.assertEqual(len(CFG["entries"]), 109)
+
+    def test_every_category_has_trend_entries(self):
+        """categories.json-এর ১৫টা ক্যাটাগরির প্রত্যেকটার অন্তত ৩টা Trends entry (নতুন ক্যাটাগরি ভুলে বাদ পড়া ধরে)।"""
+        from collections import Counter
+        from trends.config import known_categories
+        cnt = Counter(e["category"] for e in CFG["entries"])
+        self.assertEqual(len(known_categories()), 15)
+        for slug in known_categories():
+            self.assertGreaterEqual(cnt[slug], 3, slug)
+        self.assertEqual(set(cnt), set(known_categories()))
+
+    def test_unknown_category_rejected(self):
+        import copy
+        c = copy.deepcopy(CFG)
+        c["entries"].append({"id": "x", "category": "no-such-cat", "q": "zzz term", "match": ["zzz"]})
+        with self.assertRaises(TrendsConfigError):
+            validate(c)
+
+    def test_enabled_categories_reads_categories_json(self):
+        import json, tempfile
+        from pathlib import Path
+        from trends.config import enabled_categories
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "config").mkdir()
+            self.assertIsNone(enabled_categories(Path(d)))          # ফাইল নেই: সব ধরা (None)
+            (Path(d) / "config" / "categories.json").write_text(json.dumps({"categories": [
+                {"slug": "a"}, {"slug": "b", "enabled": False}, {"slug": "c", "enabled": True}]}), encoding="utf-8")
+            self.assertEqual(enabled_categories(Path(d)), {"a", "c"})
 
     def _with(self, **over):
         import copy

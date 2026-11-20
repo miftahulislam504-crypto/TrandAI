@@ -1,5 +1,5 @@
 {
-  "_note": "Phase 3: Google Trends কীওয়ার্ড ও সেটিংস। entries-এর প্রতিটা একটা 'segment' (প্রোডাক্টের ধরন)। প্রোডাক্টের টাইটেলে match-এর যেকোনো একটা phrase-এর সব শব্দ থাকলে প্রোডাক্টটা ওই segment-এর কীওয়ার্ড পায়। q = ইংরেজি সার্চ শব্দ, bn = বাংলা। seasonal: true দিলে মৌসুমি ধরা হয় (না দিলে ৫ বছরের ডেটা দেখে নিজে শনাক্ত হয়)।",
+  "_note": "Phase 3: Google Trends কীওয়ার্ড ও সেটিংস। entries-এর প্রতিটা একটা 'segment' (প্রোডাক্টের ধরন)। প্রোডাক্টের টাইটেলে match-এর যেকোনো একটা phrase-এর সব শব্দ থাকলে প্রোডাক্টটা ওই segment-এর কীওয়ার্ড পায়। q = ইংরেজি সার্চ শব্দ, bn = বাংলা। seasonal: true দিলে মৌসুমি ধরা হয় (না দিলে ৫ বছরের ডেটা দেখে নিজে শনাক্ত হয়)। বন্ধ (enabled: false) ক্যাটাগরির entry রোজকার/সাপ্তাহিক সংগ্রহে ধরা হয় না (--category দিয়ে নাম ধরলে ধরে); Trends ১২ মাস পেছনের ডেটা দেয়, তাই ক্যাটাগরি চালুর পরে সংগ্রহ করলেও ইতিহাস হারায় না। নতুন entry-র ইংরেজি/বাংলা শব্দ আমার অনুমান, আসল Google-এ যাচাই হয়নি (Trends Smoke Test / প্রথম রানে no_data / low_volume দেখাবে)।",
   "settings": {
     "geo": "BD",
     "hl": "en-US",
@@ -30,49 +30,1208 @@
     "min_peak_raw": 10
   },
   "smoke": {
-    "probe_terms": ["saree", "air fryer", "bed sheet", "online shopping", "daraz"]
+    "probe_terms": [
+      "saree",
+      "air fryer",
+      "bed sheet",
+      "online shopping",
+      "daraz"
+    ]
   },
   "entries": [
-    {"id": "panjabi", "category": "fashion", "q": "panjabi", "bn": "পাঞ্জাবি", "match": ["panjabi", "punjabi", "পাঞ্জাবি"], "seasonal": true},
-    {"id": "saree", "category": "fashion", "q": "saree", "bn": "শাড়ি", "match": ["saree", "sari", "শাড়ি"]},
-    {"id": "three-piece", "category": "fashion", "q": "three piece", "bn": "থ্রি পিস", "match": ["three piece", "3 piece", "থ্রি পিস"]},
-    {"id": "kurti", "category": "fashion", "q": "kurti", "bn": "কুর্তি", "match": ["kurti", "kurta", "কুর্তি"]},
-    {"id": "t-shirt", "category": "fashion", "q": "t-shirt", "bn": "টি শার্ট", "match": ["t shirt", "tshirt", "টি শার্ট"]},
-    {"id": "polo-shirt", "category": "fashion", "q": "polo shirt", "bn": "পোলো শার্ট", "match": ["polo shirt", "polo", "পোলো"]},
-    {"id": "jeans", "category": "fashion", "q": "jeans pant", "bn": "জিন্স প্যান্ট", "match": ["jeans", "denim pant", "জিন্স"]},
-    {"id": "hijab", "category": "fashion", "q": "hijab", "bn": "হিজাব", "match": ["hijab", "হিজাব"]},
-    {"id": "burka", "category": "fashion", "q": "burka", "bn": "বোরকা", "match": ["burka", "burqa", "বোরকা"], "seasonal": true},
-    {"id": "sneakers", "category": "fashion", "q": "sneakers", "bn": "স্নিকার্স", "match": ["sneaker", "sneakers", "স্নিকার্স"]},
-    {"id": "sandal", "category": "fashion", "q": "sandal", "bn": "স্যান্ডেল", "match": ["sandal", "sandals", "স্যান্ডেল"]},
-    {"id": "ladies-bag", "category": "fashion", "q": "ladies bag", "bn": "লেডিস ব্যাগ", "match": ["ladies bag", "women bag", "handbag", "hand bag", "লেডিস ব্যাগ"]},
-
-    {"id": "bed-sheet", "category": "home", "q": "bed sheet", "bn": "বেডশিট", "match": ["bed sheet", "bedsheet", "বেডশিট"]},
-    {"id": "curtain", "category": "home", "q": "curtain", "bn": "পর্দা", "match": ["curtain", "পর্দা"]},
-    {"id": "wall-clock", "category": "home", "q": "wall clock", "bn": "দেয়াল ঘড়ি", "match": ["wall clock", "দেয়াল ঘড়ি"]},
-    {"id": "wall-decor", "category": "home", "q": "wall decor", "bn": "ওয়াল ডেকোর", "match": ["wall decor", "wall art", "ওয়াল ডেকোর"]},
-    {"id": "storage-box", "category": "home", "q": "storage box", "bn": "স্টোরেজ বক্স", "match": ["storage box", "storage basket", "স্টোরেজ বক্স"]},
-    {"id": "led-light", "category": "home", "q": "led light", "bn": "এলইডি লাইট", "match": ["led light", "led strip", "fairy light", "এলইডি লাইট"]},
-    {"id": "door-mat", "category": "home", "q": "door mat", "bn": "পাপোশ", "match": ["door mat", "doormat", "পাপোশ"]},
-    {"id": "pillow", "category": "home", "q": "pillow", "bn": "বালিশ", "match": ["pillow", "বালিশ"]},
-    {"id": "blanket", "category": "home", "q": "blanket", "bn": "কম্বল", "match": ["blanket", "comforter", "কম্বল"], "seasonal": true},
-    {"id": "wall-sticker", "category": "home", "q": "wall sticker", "bn": "ওয়াল স্টিকার", "match": ["wall sticker", "ওয়াল স্টিকার"]},
-    {"id": "artificial-flower", "category": "home", "q": "artificial flower", "bn": "কৃত্রিম ফুল", "match": ["artificial flower", "fake flower", "কৃত্রিম ফুল"]},
-    {"id": "table-cloth", "category": "home", "q": "table cloth", "bn": "টেবিল ক্লথ", "match": ["table cloth", "tablecloth", "টেবিল ক্লথ"]},
-
-    {"id": "kitchen-organizer", "category": "kitchen", "q": "kitchen organizer", "bn": "কিচেন অর্গানাইজার", "match": ["kitchen organizer", "organizer", "অর্গানাইজার"]},
-    {"id": "non-stick-pan", "category": "kitchen", "q": "non stick pan", "bn": "নন স্টিক প্যান", "match": ["non stick", "nonstick", "frying pan", "নন স্টিক"]},
-    {"id": "air-fryer", "category": "kitchen", "q": "air fryer", "bn": "এয়ার ফ্রায়ার", "match": ["air fryer", "airfryer", "এয়ার ফ্রায়ার"]},
-    {"id": "lunch-box", "category": "kitchen", "q": "lunch box", "bn": "লাঞ্চ বক্স", "match": ["lunch box", "lunchbox", "tiffin", "লাঞ্চ বক্স"]},
-    {"id": "knife-set", "category": "kitchen", "q": "knife set", "bn": "ছুরি সেট", "match": ["knife set", "knife", "ছুরি"]},
-    {"id": "dinner-set", "category": "kitchen", "q": "dinner set", "bn": "ডিনার সেট", "match": ["dinner set", "dinnerware", "ডিনার সেট"]},
-    {"id": "kitchen-rack", "category": "kitchen", "q": "kitchen rack", "bn": "কিচেন রাক", "match": ["kitchen rack", "dish rack", "spice rack", "কিচেন রাক"]},
-    {"id": "food-container", "category": "kitchen", "q": "food container", "bn": "ফুড কন্টেইনার", "match": ["food container", "airtight container", "ফুড কন্টেইনার"]},
-    {"id": "water-bottle", "category": "kitchen", "q": "water bottle", "bn": "পানির বোতল", "match": ["water bottle", "flask", "পানির বোতল"]},
-    {"id": "rice-cooker", "category": "kitchen", "q": "rice cooker", "bn": "রাইস কুকার", "match": ["rice cooker", "রাইস কুকার"]},
-    {"id": "blender", "category": "kitchen", "q": "blender", "bn": "ব্লেন্ডার", "match": ["blender", "juicer", "ব্লেন্ডার"]},
-    {"id": "electric-kettle", "category": "kitchen", "q": "electric kettle", "bn": "ইলেকট্রিক কেটলি", "match": ["electric kettle", "kettle", "কেটলি"]},
-    {"id": "induction-cooker", "category": "kitchen", "q": "induction cooker", "bn": "ইন্ডাকশন চুলা", "match": ["induction", "ইন্ডাকশন"]},
-    {"id": "gas-stove", "category": "kitchen", "q": "gas stove", "bn": "গ্যাসের চুলা", "match": ["gas stove", "gas burner", "গ্যাসের চুলা"]},
-    {"id": "microwave-oven", "category": "kitchen", "q": "microwave oven", "bn": "মাইক্রোওয়েভ ওভেন", "match": ["microwave", "মাইক্রোওয়েভ"]}
+    {
+      "id": "panjabi",
+      "category": "fashion",
+      "q": "panjabi",
+      "bn": "পাঞ্জাবি",
+      "match": [
+        "panjabi",
+        "punjabi",
+        "পাঞ্জাবি"
+      ],
+      "seasonal": true
+    },
+    {
+      "id": "saree",
+      "category": "fashion",
+      "q": "saree",
+      "bn": "শাড়ি",
+      "match": [
+        "saree",
+        "sari",
+        "শাড়ি"
+      ]
+    },
+    {
+      "id": "three-piece",
+      "category": "fashion",
+      "q": "three piece",
+      "bn": "থ্রি পিস",
+      "match": [
+        "three piece",
+        "3 piece",
+        "থ্রি পিস"
+      ]
+    },
+    {
+      "id": "kurti",
+      "category": "fashion",
+      "q": "kurti",
+      "bn": "কুর্তি",
+      "match": [
+        "kurti",
+        "kurta",
+        "কুর্তি"
+      ]
+    },
+    {
+      "id": "t-shirt",
+      "category": "fashion",
+      "q": "t-shirt",
+      "bn": "টি শার্ট",
+      "match": [
+        "t shirt",
+        "tshirt",
+        "টি শার্ট"
+      ]
+    },
+    {
+      "id": "polo-shirt",
+      "category": "fashion",
+      "q": "polo shirt",
+      "bn": "পোলো শার্ট",
+      "match": [
+        "polo shirt",
+        "polo",
+        "পোলো"
+      ]
+    },
+    {
+      "id": "jeans",
+      "category": "fashion",
+      "q": "jeans pant",
+      "bn": "জিন্স প্যান্ট",
+      "match": [
+        "jeans",
+        "denim pant",
+        "জিন্স"
+      ]
+    },
+    {
+      "id": "hijab",
+      "category": "fashion",
+      "q": "hijab",
+      "bn": "হিজাব",
+      "match": [
+        "hijab",
+        "হিজাব"
+      ]
+    },
+    {
+      "id": "burka",
+      "category": "fashion",
+      "q": "burka",
+      "bn": "বোরকা",
+      "match": [
+        "burka",
+        "burqa",
+        "বোরকা"
+      ],
+      "seasonal": true
+    },
+    {
+      "id": "sneakers",
+      "category": "fashion",
+      "q": "sneakers",
+      "bn": "স্নিকার্স",
+      "match": [
+        "sneaker",
+        "sneakers",
+        "স্নিকার্স"
+      ]
+    },
+    {
+      "id": "sandal",
+      "category": "fashion",
+      "q": "sandal",
+      "bn": "স্যান্ডেল",
+      "match": [
+        "sandal",
+        "sandals",
+        "স্যান্ডেল"
+      ]
+    },
+    {
+      "id": "ladies-bag",
+      "category": "fashion",
+      "q": "ladies bag",
+      "bn": "লেডিস ব্যাগ",
+      "match": [
+        "ladies bag",
+        "women bag",
+        "handbag",
+        "hand bag",
+        "লেডিস ব্যাগ"
+      ]
+    },
+    {
+      "id": "bed-sheet",
+      "category": "home",
+      "q": "bed sheet",
+      "bn": "বেডশিট",
+      "match": [
+        "bed sheet",
+        "bedsheet",
+        "বেডশিট"
+      ]
+    },
+    {
+      "id": "curtain",
+      "category": "home",
+      "q": "curtain",
+      "bn": "পর্দা",
+      "match": [
+        "curtain",
+        "পর্দা"
+      ]
+    },
+    {
+      "id": "wall-clock",
+      "category": "home",
+      "q": "wall clock",
+      "bn": "দেয়াল ঘড়ি",
+      "match": [
+        "wall clock",
+        "দেয়াল ঘড়ি"
+      ]
+    },
+    {
+      "id": "wall-decor",
+      "category": "home",
+      "q": "wall decor",
+      "bn": "ওয়াল ডেকোর",
+      "match": [
+        "wall decor",
+        "wall art",
+        "ওয়াল ডেকোর"
+      ]
+    },
+    {
+      "id": "storage-box",
+      "category": "home",
+      "q": "storage box",
+      "bn": "স্টোরেজ বক্স",
+      "match": [
+        "storage box",
+        "storage basket",
+        "স্টোরেজ বক্স"
+      ]
+    },
+    {
+      "id": "led-light",
+      "category": "home",
+      "q": "led light",
+      "bn": "এলইডি লাইট",
+      "match": [
+        "led light",
+        "led strip",
+        "fairy light",
+        "এলইডি লাইট"
+      ]
+    },
+    {
+      "id": "door-mat",
+      "category": "home",
+      "q": "door mat",
+      "bn": "পাপোশ",
+      "match": [
+        "door mat",
+        "doormat",
+        "পাপোশ"
+      ]
+    },
+    {
+      "id": "pillow",
+      "category": "home",
+      "q": "pillow",
+      "bn": "বালিশ",
+      "match": [
+        "pillow",
+        "বালিশ"
+      ]
+    },
+    {
+      "id": "blanket",
+      "category": "home",
+      "q": "blanket",
+      "bn": "কম্বল",
+      "match": [
+        "blanket",
+        "comforter",
+        "কম্বল"
+      ],
+      "seasonal": true
+    },
+    {
+      "id": "wall-sticker",
+      "category": "home",
+      "q": "wall sticker",
+      "bn": "ওয়াল স্টিকার",
+      "match": [
+        "wall sticker",
+        "ওয়াল স্টিকার"
+      ]
+    },
+    {
+      "id": "artificial-flower",
+      "category": "home",
+      "q": "artificial flower",
+      "bn": "কৃত্রিম ফুল",
+      "match": [
+        "artificial flower",
+        "fake flower",
+        "কৃত্রিম ফুল"
+      ]
+    },
+    {
+      "id": "table-cloth",
+      "category": "home",
+      "q": "table cloth",
+      "bn": "টেবিল ক্লথ",
+      "match": [
+        "table cloth",
+        "tablecloth",
+        "টেবিল ক্লথ"
+      ]
+    },
+    {
+      "id": "kitchen-organizer",
+      "category": "kitchen",
+      "q": "kitchen organizer",
+      "bn": "কিচেন অর্গানাইজার",
+      "match": [
+        "kitchen organizer",
+        "organizer",
+        "অর্গানাইজার"
+      ]
+    },
+    {
+      "id": "non-stick-pan",
+      "category": "kitchen",
+      "q": "non stick pan",
+      "bn": "নন স্টিক প্যান",
+      "match": [
+        "non stick",
+        "nonstick",
+        "frying pan",
+        "নন স্টিক"
+      ]
+    },
+    {
+      "id": "air-fryer",
+      "category": "kitchen",
+      "q": "air fryer",
+      "bn": "এয়ার ফ্রায়ার",
+      "match": [
+        "air fryer",
+        "airfryer",
+        "এয়ার ফ্রায়ার"
+      ]
+    },
+    {
+      "id": "lunch-box",
+      "category": "kitchen",
+      "q": "lunch box",
+      "bn": "লাঞ্চ বক্স",
+      "match": [
+        "lunch box",
+        "lunchbox",
+        "tiffin",
+        "লাঞ্চ বক্স"
+      ]
+    },
+    {
+      "id": "knife-set",
+      "category": "kitchen",
+      "q": "knife set",
+      "bn": "ছুরি সেট",
+      "match": [
+        "knife set",
+        "knife",
+        "ছুরি"
+      ]
+    },
+    {
+      "id": "dinner-set",
+      "category": "kitchen",
+      "q": "dinner set",
+      "bn": "ডিনার সেট",
+      "match": [
+        "dinner set",
+        "dinnerware",
+        "ডিনার সেট"
+      ]
+    },
+    {
+      "id": "kitchen-rack",
+      "category": "kitchen",
+      "q": "kitchen rack",
+      "bn": "কিচেন রাক",
+      "match": [
+        "kitchen rack",
+        "dish rack",
+        "spice rack",
+        "কিচেন রাক"
+      ]
+    },
+    {
+      "id": "food-container",
+      "category": "kitchen",
+      "q": "food container",
+      "bn": "ফুড কন্টেইনার",
+      "match": [
+        "food container",
+        "airtight container",
+        "ফুড কন্টেইনার"
+      ]
+    },
+    {
+      "id": "water-bottle",
+      "category": "kitchen",
+      "q": "water bottle",
+      "bn": "পানির বোতল",
+      "match": [
+        "water bottle",
+        "flask",
+        "পানির বোতল"
+      ]
+    },
+    {
+      "id": "rice-cooker",
+      "category": "kitchen",
+      "q": "rice cooker",
+      "bn": "রাইস কুকার",
+      "match": [
+        "rice cooker",
+        "রাইস কুকার"
+      ]
+    },
+    {
+      "id": "blender",
+      "category": "kitchen",
+      "q": "blender",
+      "bn": "ব্লেন্ডার",
+      "match": [
+        "blender",
+        "juicer",
+        "ব্লেন্ডার"
+      ]
+    },
+    {
+      "id": "electric-kettle",
+      "category": "kitchen",
+      "q": "electric kettle",
+      "bn": "ইলেকট্রিক কেটলি",
+      "match": [
+        "electric kettle",
+        "kettle",
+        "কেটলি"
+      ]
+    },
+    {
+      "id": "induction-cooker",
+      "category": "kitchen",
+      "q": "induction cooker",
+      "bn": "ইন্ডাকশন চুলা",
+      "match": [
+        "induction",
+        "ইন্ডাকশন"
+      ]
+    },
+    {
+      "id": "gas-stove",
+      "category": "kitchen",
+      "q": "gas stove",
+      "bn": "গ্যাসের চুলা",
+      "match": [
+        "gas stove",
+        "gas burner",
+        "গ্যাসের চুলা"
+      ]
+    },
+    {
+      "id": "microwave-oven",
+      "category": "kitchen",
+      "q": "microwave oven",
+      "bn": "মাইক্রোওয়েভ ওভেন",
+      "match": [
+        "microwave",
+        "মাইক্রোওয়েভ"
+      ]
+    },
+    {
+      "id": "bluetooth-speaker",
+      "category": "electronics",
+      "q": "bluetooth speaker",
+      "bn": "ব্লুটুথ স্পিকার",
+      "match": [
+        "bluetooth speaker",
+        "wireless speaker",
+        "ব্লুটুথ স্পিকার"
+      ]
+    },
+    {
+      "id": "smart-watch",
+      "category": "electronics",
+      "q": "smart watch",
+      "bn": "স্মার্ট ওয়াচ",
+      "match": [
+        "smart watch",
+        "smartwatch",
+        "স্মার্ট ওয়াচ"
+      ]
+    },
+    {
+      "id": "gaming-mouse",
+      "category": "electronics",
+      "q": "gaming mouse",
+      "bn": "গেমিং মাউস",
+      "match": [
+        "gaming mouse",
+        "wireless mouse",
+        "গেমিং মাউস"
+      ]
+    },
+    {
+      "id": "keyboard",
+      "category": "electronics",
+      "q": "keyboard",
+      "bn": "কীবোর্ড",
+      "match": [
+        "keyboard",
+        "কীবোর্ড"
+      ]
+    },
+    {
+      "id": "hair-trimmer",
+      "category": "electronics",
+      "q": "hair trimmer",
+      "bn": "ট্রিমার",
+      "match": [
+        "trimmer",
+        "shaver",
+        "ট্রিমার"
+      ]
+    },
+    {
+      "id": "webcam",
+      "category": "electronics",
+      "q": "webcam",
+      "bn": "ওয়েবক্যাম",
+      "match": [
+        "webcam",
+        "web camera",
+        "ওয়েবক্যাম"
+      ]
+    },
+    {
+      "id": "ring-light",
+      "category": "electronics",
+      "q": "ring light",
+      "bn": "রিং লাইট",
+      "match": [
+        "ring light",
+        "ringlight",
+        "রিং লাইট"
+      ]
+    },
+    {
+      "id": "earbuds",
+      "category": "mobile-accessories",
+      "q": "earbuds",
+      "bn": "ইয়ারবাড",
+      "match": [
+        "earbuds",
+        "earbud",
+        "airpods",
+        "ইয়ারবাড"
+      ]
+    },
+    {
+      "id": "power-bank",
+      "category": "mobile-accessories",
+      "q": "power bank",
+      "bn": "পাওয়ার ব্যাংক",
+      "match": [
+        "power bank",
+        "powerbank",
+        "পাওয়ার ব্যাংক"
+      ]
+    },
+    {
+      "id": "phone-case",
+      "category": "mobile-accessories",
+      "q": "phone case",
+      "bn": "ফোন কেস",
+      "match": [
+        "phone case",
+        "back cover",
+        "mobile cover",
+        "ফোন কেস"
+      ]
+    },
+    {
+      "id": "mobile-charger",
+      "category": "mobile-accessories",
+      "q": "mobile charger",
+      "bn": "মোবাইল চার্জার",
+      "match": [
+        "mobile charger",
+        "fast charger",
+        "charger",
+        "চার্জার"
+      ]
+    },
+    {
+      "id": "usb-cable",
+      "category": "mobile-accessories",
+      "q": "usb cable",
+      "bn": "ইউএসবি ক্যাবল",
+      "match": [
+        "usb cable",
+        "type c cable",
+        "data cable",
+        "ইউএসবি ক্যাবল"
+      ]
+    },
+    {
+      "id": "tempered-glass",
+      "category": "mobile-accessories",
+      "q": "tempered glass",
+      "bn": "টেম্পার্ড গ্লাস",
+      "match": [
+        "tempered glass",
+        "screen protector",
+        "টেম্পার্ড গ্লাস"
+      ]
+    },
+    {
+      "id": "face-wash",
+      "category": "beauty",
+      "q": "face wash",
+      "bn": "ফেসওয়াশ",
+      "match": [
+        "face wash",
+        "facewash",
+        "ফেসওয়াশ"
+      ]
+    },
+    {
+      "id": "sunscreen",
+      "category": "beauty",
+      "q": "sunscreen",
+      "bn": "সানস্ক্রিন",
+      "match": [
+        "sunscreen",
+        "sun block",
+        "সানস্ক্রিন"
+      ]
+    },
+    {
+      "id": "lipstick",
+      "category": "beauty",
+      "q": "lipstick",
+      "bn": "লিপস্টিক",
+      "match": [
+        "lipstick",
+        "lip gloss",
+        "লিপস্টিক"
+      ]
+    },
+    {
+      "id": "hair-oil",
+      "category": "beauty",
+      "q": "hair oil",
+      "bn": "হেয়ার অয়েল",
+      "match": [
+        "hair oil",
+        "হেয়ার অয়েল"
+      ]
+    },
+    {
+      "id": "perfume",
+      "category": "beauty",
+      "q": "perfume",
+      "bn": "পারফিউম",
+      "match": [
+        "perfume",
+        "body spray",
+        "পারফিউম"
+      ]
+    },
+    {
+      "id": "face-serum",
+      "category": "beauty",
+      "q": "face serum",
+      "bn": "ফেস সিরাম",
+      "match": [
+        "serum",
+        "face serum",
+        "সিরাম"
+      ]
+    },
+    {
+      "id": "body-lotion",
+      "category": "beauty",
+      "q": "body lotion",
+      "bn": "বডি লোশন",
+      "match": [
+        "body lotion",
+        "moisturizer",
+        "বডি লোশন"
+      ]
+    },
+    {
+      "id": "shampoo",
+      "category": "beauty",
+      "q": "shampoo",
+      "bn": "শ্যাম্পু",
+      "match": [
+        "shampoo",
+        "শ্যাম্পু"
+      ]
+    },
+    {
+      "id": "nail-polish",
+      "category": "beauty",
+      "q": "nail polish",
+      "bn": "নেইল পলিশ",
+      "match": [
+        "nail polish",
+        "নেইল পলিশ"
+      ]
+    },
+    {
+      "id": "hair-straightener",
+      "category": "beauty",
+      "q": "hair straightener",
+      "bn": "হেয়ার স্ট্রেইটনার",
+      "match": [
+        "hair straightener",
+        "hair dryer",
+        "হেয়ার স্ট্রেইটনার"
+      ]
+    },
+    {
+      "id": "massager",
+      "category": "health-wellness",
+      "q": "massager",
+      "bn": "ম্যাসাজার",
+      "match": [
+        "massager",
+        "massage gun",
+        "ম্যাসাজার"
+      ]
+    },
+    {
+      "id": "weight-scale",
+      "category": "health-wellness",
+      "q": "digital weight scale",
+      "bn": "ওজন মাপার মেশিন",
+      "match": [
+        "weight scale",
+        "weighing scale",
+        "ওজন মাপার মেশিন"
+      ]
+    },
+    {
+      "id": "thermometer",
+      "category": "health-wellness",
+      "q": "digital thermometer",
+      "bn": "থার্মোমিটার",
+      "match": [
+        "thermometer",
+        "থার্মোমিটার"
+      ]
+    },
+    {
+      "id": "bp-monitor",
+      "category": "health-wellness",
+      "q": "bp monitor",
+      "bn": "প্রেসার মাপার মেশিন",
+      "match": [
+        "bp monitor",
+        "blood pressure monitor",
+        "প্রেসার মাপার মেশিন"
+      ]
+    },
+    {
+      "id": "wrist-watch",
+      "category": "watches-jewellery",
+      "q": "wrist watch",
+      "bn": "হাতঘড়ি",
+      "match": [
+        "wrist watch",
+        "watch",
+        "হাতঘড়ি"
+      ]
+    },
+    {
+      "id": "necklace",
+      "category": "watches-jewellery",
+      "q": "necklace",
+      "bn": "নেকলেস",
+      "match": [
+        "necklace",
+        "pendant",
+        "নেকলেস"
+      ]
+    },
+    {
+      "id": "earrings",
+      "category": "watches-jewellery",
+      "q": "earrings",
+      "bn": "কানের দুল",
+      "match": [
+        "earring",
+        "earrings",
+        "কানের দুল"
+      ]
+    },
+    {
+      "id": "bracelet",
+      "category": "watches-jewellery",
+      "q": "bracelet",
+      "bn": "ব্রেসলেট",
+      "match": [
+        "bracelet",
+        "bangle",
+        "ব্রেসলেট"
+      ]
+    },
+    {
+      "id": "backpack",
+      "category": "bags-footwear",
+      "q": "backpack",
+      "bn": "ব্যাকপ্যাক",
+      "match": [
+        "backpack",
+        "laptop bag",
+        "ব্যাকপ্যাক"
+      ]
+    },
+    {
+      "id": "loafers",
+      "category": "bags-footwear",
+      "q": "loafers",
+      "bn": "লোফার",
+      "match": [
+        "loafer",
+        "loafers",
+        "লোফার"
+      ]
+    },
+    {
+      "id": "formal-shoes",
+      "category": "bags-footwear",
+      "q": "formal shoes",
+      "bn": "ফরমাল জুতা",
+      "match": [
+        "formal shoes",
+        "oxford shoes",
+        "ফরমাল জুতা"
+      ]
+    },
+    {
+      "id": "slipper",
+      "category": "bags-footwear",
+      "q": "slipper",
+      "bn": "স্লিপার",
+      "match": [
+        "slipper",
+        "slippers",
+        "স্লিপার"
+      ]
+    },
+    {
+      "id": "travel-bag",
+      "category": "bags-footwear",
+      "q": "travel bag",
+      "bn": "ট্রাভেল ব্যাগ",
+      "match": [
+        "travel bag",
+        "luggage",
+        "ট্রাভেল ব্যাগ"
+      ]
+    },
+    {
+      "id": "prayer-mat",
+      "category": "islamic",
+      "q": "prayer mat",
+      "bn": "জায়নামাজ",
+      "match": [
+        "prayer mat",
+        "janamaz",
+        "জায়নামাজ"
+      ]
+    },
+    {
+      "id": "tasbih",
+      "category": "islamic",
+      "q": "tasbih",
+      "bn": "তসবিহ",
+      "match": [
+        "tasbih",
+        "tasbeeh",
+        "তসবিহ"
+      ]
+    },
+    {
+      "id": "attar",
+      "category": "islamic",
+      "q": "attar",
+      "bn": "আতর",
+      "match": [
+        "attar",
+        "ittar",
+        "আতর"
+      ]
+    },
+    {
+      "id": "prayer-cap",
+      "category": "islamic",
+      "q": "prayer cap",
+      "bn": "টুপি",
+      "match": [
+        "prayer cap",
+        "topi",
+        "টুপি"
+      ]
+    },
+    {
+      "id": "jubba",
+      "category": "islamic",
+      "q": "thobe",
+      "bn": "জুব্বা",
+      "match": [
+        "thobe",
+        "jubba",
+        "জুব্বা"
+      ]
+    },
+    {
+      "id": "gift-box",
+      "category": "gifts-lifestyle",
+      "q": "gift box",
+      "bn": "গিফট বক্স",
+      "match": [
+        "gift box",
+        "gift set",
+        "গিফট বক্স"
+      ]
+    },
+    {
+      "id": "photo-frame",
+      "category": "gifts-lifestyle",
+      "q": "photo frame",
+      "bn": "ফটো ফ্রেম",
+      "match": [
+        "photo frame",
+        "picture frame",
+        "ফটো ফ্রেম"
+      ]
+    },
+    {
+      "id": "teddy-bear",
+      "category": "gifts-lifestyle",
+      "q": "teddy bear",
+      "bn": "টেডি বিয়ার",
+      "match": [
+        "teddy bear",
+        "teddy",
+        "টেডি বিয়ার"
+      ]
+    },
+    {
+      "id": "custom-mug",
+      "category": "gifts-lifestyle",
+      "q": "customized mug",
+      "bn": "কাস্টমাইজড মগ",
+      "match": [
+        "customized mug",
+        "custom mug",
+        "photo mug",
+        "কাস্টমাইজড মগ"
+      ]
+    },
+    {
+      "id": "honey",
+      "category": "grocery",
+      "q": "honey",
+      "bn": "মধু",
+      "match": [
+        "honey",
+        "মধু"
+      ]
+    },
+    {
+      "id": "dates",
+      "category": "grocery",
+      "q": "dates",
+      "bn": "খেজুর",
+      "match": [
+        "dates",
+        "khejur",
+        "খেজুর"
+      ],
+      "seasonal": true
+    },
+    {
+      "id": "ghee",
+      "category": "grocery",
+      "q": "ghee",
+      "bn": "ঘি",
+      "match": [
+        "ghee",
+        "ঘি"
+      ]
+    },
+    {
+      "id": "mustard-oil",
+      "category": "grocery",
+      "q": "mustard oil",
+      "bn": "সরিষার তেল",
+      "match": [
+        "mustard oil",
+        "সরিষার তেল"
+      ]
+    },
+    {
+      "id": "helmet",
+      "category": "automotive",
+      "q": "helmet",
+      "bn": "হেলমেট",
+      "match": [
+        "helmet",
+        "হেলমেট"
+      ]
+    },
+    {
+      "id": "bike-cover",
+      "category": "automotive",
+      "q": "bike cover",
+      "bn": "বাইক কভার",
+      "match": [
+        "bike cover",
+        "motorcycle cover",
+        "বাইক কভার"
+      ]
+    },
+    {
+      "id": "car-freshener",
+      "category": "automotive",
+      "q": "car air freshener",
+      "bn": "কার পারফিউম",
+      "match": [
+        "car freshener",
+        "car air freshener",
+        "কার পারফিউম"
+      ]
+    },
+    {
+      "id": "dash-cam",
+      "category": "automotive",
+      "q": "dash cam",
+      "bn": "ড্যাশ ক্যাম",
+      "match": [
+        "dash cam",
+        "dashcam",
+        "ড্যাশ ক্যাম"
+      ]
+    },
+    {
+      "id": "yoga-mat",
+      "category": "sports",
+      "q": "yoga mat",
+      "bn": "যোগা ম্যাট",
+      "match": [
+        "yoga mat",
+        "exercise mat",
+        "যোগা ম্যাট"
+      ]
+    },
+    {
+      "id": "dumbbell",
+      "category": "sports",
+      "q": "dumbbell",
+      "bn": "ডাম্বেল",
+      "match": [
+        "dumbbell",
+        "dumbbells",
+        "ডাম্বেল"
+      ]
+    },
+    {
+      "id": "skipping-rope",
+      "category": "sports",
+      "q": "skipping rope",
+      "bn": "স্কিপিং রোপ",
+      "match": [
+        "skipping rope",
+        "jump rope",
+        "স্কিপিং রোপ"
+      ]
+    },
+    {
+      "id": "football",
+      "category": "sports",
+      "q": "football",
+      "bn": "ফুটবল",
+      "match": [
+        "football",
+        "ফুটবল"
+      ]
+    },
+    {
+      "id": "badminton-racket",
+      "category": "sports",
+      "q": "badminton racket",
+      "bn": "ব্যাডমিন্টন র‍্যাকেট",
+      "match": [
+        "badminton racket",
+        "badminton racquet",
+        "ব্যাডমিন্টন র‍্যাকেট"
+      ]
+    },
+    {
+      "id": "cricket-bat",
+      "category": "sports",
+      "q": "cricket bat",
+      "bn": "ক্রিকেট ব্যাট",
+      "match": [
+        "cricket bat",
+        "ক্রিকেট ব্যাট"
+      ]
+    },
+    {
+      "id": "gym-gloves",
+      "category": "sports",
+      "q": "gym gloves",
+      "bn": "জিম গ্লাভস",
+      "match": [
+        "gym gloves",
+        "জিম গ্লাভস"
+      ]
+    },
+    {
+      "id": "resistance-band",
+      "category": "sports",
+      "q": "resistance band",
+      "bn": "রেজিস্ট্যান্স ব্যান্ড",
+      "match": [
+        "resistance band",
+        "exercise band",
+        "রেজিস্ট্যান্স ব্যান্ড"
+      ]
+    },
+    {
+      "id": "baby-diaper",
+      "category": "baby",
+      "q": "baby diaper",
+      "bn": "বেবি ডায়াপার",
+      "match": [
+        "baby diaper",
+        "diaper",
+        "ডায়াপার"
+      ]
+    },
+    {
+      "id": "baby-toy",
+      "category": "baby",
+      "q": "baby toy",
+      "bn": "বেবি টয়",
+      "match": [
+        "baby toy",
+        "kids toy",
+        "খেলনা"
+      ]
+    },
+    {
+      "id": "baby-dress",
+      "category": "baby",
+      "q": "baby dress",
+      "bn": "বেবি ড্রেস",
+      "match": [
+        "baby dress",
+        "baby romper",
+        "বেবি ড্রেস"
+      ]
+    },
+    {
+      "id": "feeding-bottle",
+      "category": "baby",
+      "q": "feeding bottle",
+      "bn": "ফিডিং বোতল",
+      "match": [
+        "feeding bottle",
+        "baby bottle",
+        "ফিডিং বোতল"
+      ]
+    },
+    {
+      "id": "baby-carrier",
+      "category": "baby",
+      "q": "baby carrier",
+      "bn": "বেবি ক্যারিয়ার",
+      "match": [
+        "baby carrier",
+        "baby carry bag",
+        "বেবি ক্যারিয়ার"
+      ]
+    },
+    {
+      "id": "kids-shoes",
+      "category": "baby",
+      "q": "kids shoes",
+      "bn": "বাচ্চাদের জুতা",
+      "match": [
+        "kids shoes",
+        "baby shoes",
+        "বাচ্চাদের জুতা"
+      ]
+    },
+    {
+      "id": "baby-lotion",
+      "category": "baby",
+      "q": "baby lotion",
+      "bn": "বেবি লোশন",
+      "match": [
+        "baby lotion",
+        "baby oil",
+        "বেবি লোশন"
+      ]
+    },
+    {
+      "id": "baby-stroller",
+      "category": "baby",
+      "q": "baby stroller",
+      "bn": "বেবি স্ট্রলার",
+      "match": [
+        "baby stroller",
+        "pram",
+        "বেবি স্ট্রলার"
+      ]
+    },
+    {
+      "id": "school-bag",
+      "category": "baby",
+      "q": "school bag",
+      "bn": "স্কুল ব্যাগ",
+      "match": [
+        "school bag",
+        "kids bag",
+        "স্কুল ব্যাগ"
+      ]
+    }
   ]
 }

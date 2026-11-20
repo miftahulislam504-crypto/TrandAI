@@ -3,7 +3,7 @@
 
   --smoke        ২টা রিকোয়েস্ট, DB লাগে না। Google এই মেশিন থেকে ডেটা দেয় কি না, anchor ঠিক কি না দেখায়।
   --dry-run      সংগ্রহ হয় কিন্তু DB-তে কিছু লেখে না (DB env না থাকলেও চলে)
-  --category c   শুধু এই ক্যাটাগরি (fashion / home / kitchen)
+  --category c   শুধু এই ক্যাটাগরি (বন্ধ হলেও চলে)। না দিলে শুধু চালু (enabled) ক্যাটাগরির শব্দ
   --force        সম্প্রতি আনা শব্দও আবার আনে (ডিফল্টে refresh_days-এর মধ্যে আনা শব্দ বাদ, তাই আংশিক রান আবার চালালে বাকিটা থেকে শুরু হয়)
   --max-batches N  এক রানে সর্বোচ্চ N টা রিকোয়েস্ট-ব্যাচ (সীমা দিয়ে পরীক্ষার জন্য)
   --no-seasonality ৫ বছরের সিজনালিটি ধাপ বাদ
@@ -21,7 +21,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-from .config import load_config
+from .config import enabled_categories as load_enabled_categories, load_config
 from .fetcher import CircuitOpen, FetchFailed, Fetcher, PytrendsClient, TrendsClient
 from .keywords import build_terms
 from .normalize import complete, normalize_batch, seasonality
@@ -73,7 +73,8 @@ def pick_seasonality(terms: list[dict], statuses: dict[str, str], checked: dict[
 # ------------------------------------------------------------------ মূল রান
 def run(db, client: TrendsClient, cfg: dict, today: date, only_category: Optional[str] = None,
         dry_run: bool = False, force: bool = False, max_batches: Optional[int] = None,
-        do_seasonality: bool = True, sleep=None, rand=None) -> dict:
+        do_seasonality: bool = True, sleep=None, rand=None,
+        enabled_categories: Optional[set] = None) -> dict:
     s = cfg["settings"]
     geo = s["geo"]
     kw = {} if sleep is None else {"sleep": sleep}
@@ -82,7 +83,7 @@ def run(db, client: TrendsClient, cfg: dict, today: date, only_category: Optiona
     fetcher = Fetcher(client, s, **kw)
     write = db is not None and not dry_run
 
-    terms = build_terms(cfg, only_category)
+    terms = build_terms(cfg, only_category, enabled_categories=enabled_categories)
     existing: dict[str, dict] = {}
     cat_ids: dict[str, int] = {}
     if db is not None:
@@ -346,8 +347,9 @@ def main(argv=None) -> int:
     elif os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_SERVICE_KEY"):
         from scrapers.common.supabase_rest import SupabaseREST
         db = SupabaseREST.from_env()
+    # বন্ধ ক্যাটাগরির শব্দ বাদ (config/categories.json); --category নাম ধরে দিলে বন্ধ হলেও চলে
     o = run(db, client, cfg, bd_today(), args.category, args.dry_run, args.force, args.max_batches,
-            not args.no_seasonality)
+            not args.no_seasonality, enabled_categories=None if args.config else load_enabled_categories())
     _emit(summary_markdown(o), o, "trends-summary")
     # আংশিক রান ঠিক আছে (পরের রানে চলবে); চেষ্টা হয়েছে অথচ একটা শব্দও আসেনি হলেই লাল
     tried = sum(o["statuses"].values())

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { restWithCount, rest } from "@/lib/supabase";
 import { num, taka, delta, rating } from "@/lib/format";
 import { tierText } from "@/lib/tier";
+import { stripEmoji } from "@/lib/clean";
+import { Icon } from "./components/icons";
 import { SORTS, TIERS, listParams, parseListQuery } from "@/lib/listfilter";
 
 export const dynamic = "force-dynamic";
@@ -36,8 +38,8 @@ export default async function Home({ searchParams }: { searchParams: Record<stri
     })
   );
   const pages = total ? Math.ceil(total / PAGE) : 1;
-  const link = (p: number) => {
-    const u = new URLSearchParams({ ...(category && { category }), ...(tier && { tier }), ...(q && { q }), sort, page: String(p) });
+  const link = (p: number, t = tier) => {
+    const u = new URLSearchParams({ ...(category && { category }), ...(t && { tier: t }), ...(q && { q }), sort, page: String(p) });
     return `/?${u.toString()}`;
   };
 
@@ -50,44 +52,73 @@ export default async function Home({ searchParams }: { searchParams: Record<stri
     .then((r) => r.total ?? 0).catch(() => 0);
   const exportHref = `/export?${new URLSearchParams({ kind: "products", ...(category && { category }), ...(tier && { tier }), ...(q && { q }), sort }).toString()}`;
 
+  const stats: [string, string, number][] = [["best", "Best", counts[0]], ["mid", "Mid", counts[1]], ["dont", "Don't", counts[2]]];
+
   return (
     <>
-      <h1>প্রোডাক্ট তালিকা</h1>
-      {pending > 0 && <p><Link href="/matches">🔗 রিভিউ কিউ: {pending}টা জোড়া একই প্রোডাক্ট কি না দেখুন</Link></p>}
-      {unseenAlerts > 0 && <p><Link href="/alerts">🔔 {unseenAlerts}টা নতুন অ্যালার্ট</Link></p>}
-      <p><Link href="/ads">📢 Facebook Ads Library চেক</Link></p>
-      <form className="filters" method="get">
-        <input name="q" placeholder="নাম দিয়ে খুঁজুন" defaultValue={q} />
-        <select name="category" defaultValue={category}>
+      <h1>প্রোডাক্ট</h1>
+      <p className="lede">মোট {num(total)}টা প্রোডাক্ট ট্র্যাক হচ্ছে</p>
+
+      {pending > 0 && (
+        <Link href="/matches" className="notice">
+          <span>রিভিউ কিউ: {pending}টা জোড়া একই প্রোডাক্ট কি না দেখুন</span><Icon name="right" size={18} />
+        </Link>
+      )}
+      {unseenAlerts > 0 && (
+        <Link href="/alerts" className="notice">
+          <span>{unseenAlerts}টা নতুন অ্যালার্ট</span><Icon name="right" size={18} />
+        </Link>
+      )}
+
+      <form className="filters" method="get" role="search">
+        <div className="search">
+          <Icon name="search" size={18} />
+          <input name="q" placeholder="নাম দিয়ে খুঁজুন" defaultValue={q} aria-label="নাম দিয়ে খুঁজুন" />
+        </div>
+        <select name="category" defaultValue={category} aria-label="ক্যাটাগরি">
           <option value="">সব ক্যাটাগরি</option>
           {cats.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
         </select>
-        <select name="tier" defaultValue={tier}>
+        <select name="tier" defaultValue={tier} aria-label="ট্যাগ">
           <option value="">সব ট্যাগ</option>
           {Object.entries(TIERS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <select name="sort" defaultValue={sort}>
+        <select name="sort" defaultValue={sort} aria-label="সাজানো">
           {Object.entries(SORTS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <button type="submit">দেখান</button>
       </form>
-      <div className="chips">
-        <span className="chip best">Best {counts[0]}</span>
-        <span className="chip mid">Mid {counts[1]}</span>
-        <span className="chip dont">Don&apos;t {counts[2]}</span>
-      </div>
-      <p className="muted">মোট {num(total)}টা প্রোডাক্ট · <a href={exportHref}>⬇ CSV (এই ফিল্টারে)</a></p>
 
-      {rows.length === 0 && <p className="muted">এখনও কোনো ডেটা নেই। প্রথম দৈনিক রান শেষ হলে এখানে দেখা যাবে।</p>}
+      <div className="stats">
+        {stats.map(([k, label, n]) => (
+          <Link key={k} href={link(1, tier === k ? "" : k)} className={`stat${tier === k ? " on" : ""}`}
+            aria-label={`${label}: ${n}টা${tier === k ? " (ফিল্টার চালু, আবার চাপলে সরবে)" : ""}`}>
+            <span>{label}</span><b>{num(n)}</b>
+          </Link>
+        ))}
+      </div>
+
+      <div className="toolbar">
+        <span className="muted">{num(rows.length)}টা দেখানো হচ্ছে</span>
+        <a href={exportHref}><Icon name="download" size={16} />CSV ডাউনলোড</a>
+      </div>
+
+      {rows.length === 0 && <div className="empty">এখনও কোনো ডেটা নেই। প্রথম দৈনিক রান শেষ হলে এখানে দেখা যাবে।</div>}
       {rows.map((r) => (
         <Link key={r.id} href={`/products/${r.id}`} className="card">
-          <div className="title">
-            {r.tier && <span className={`badge ${r.tier}`}>{tierText(r.tier, r.confidence, r.provisional_tier)}</span>}{" "}
-            {r.title_raw || "(নাম নেই)"}
-            {r.reasons?.detail?.ads?.status === "ok" && r.reasons.detail.ads.crowded ? <>{" "}<span className="chip" title="Facebook-এ অনেকে বিজ্ঞাপন চালাচ্ছে">📢 ভিড়</span></> : null}
+          <div className="item-top">
+            <div className="item-main">
+              <div className="item-tags">
+                {r.tier && <span className={`badge ${r.tier}`}>{tierText(r.tier, r.confidence, r.provisional_tier)}</span>}
+                {r.reasons?.detail?.ads?.status === "ok" && r.reasons.detail.ads.crowded
+                  ? <span className="chip" title="Facebook-এ অনেকে বিজ্ঞাপন চালাচ্ছে">বিজ্ঞাপনে ভিড়</span> : null}
+              </div>
+              <div className="title">{r.title_raw || "(নাম নেই)"}</div>
+            </div>
+            {r.score !== null && <div className="score"><b>{Math.round(r.score)}</b><span>স্কোর</span></div>}
           </div>
           {r.score !== null && (
-            <div className="muted">স্কোর {Math.round(r.score)} · কনফিডেন্স {r.confidence}{r.reasons?.summary?.[0] ? ` · ${r.reasons.summary[0]}` : ""}</div>
+            <p className="why">কনফিডেন্স {r.confidence}{r.reasons?.summary?.[0] ? ` · ${stripEmoji(r.reasons.summary[0])}` : ""}</p>
           )}
           <div className="metrics">
             <div><span>দাম</span>{taka(r.price)} <small className={(r.price_delta_7d || 0) > 0 ? "up" : "down"}>{r.price_delta_7d ? delta(r.price_delta_7d) : ""}</small></div>
@@ -100,11 +131,11 @@ export default async function Home({ searchParams }: { searchParams: Record<stri
         </Link>
       ))}
 
-      <div className="pager">
-        {page > 1 ? <Link href={link(page - 1)}>← আগের</Link> : <span />}
+      <nav className="pager" aria-label="পেজ">
+        {page > 1 ? <Link href={link(page - 1)}><Icon name="left" size={16} />আগের</Link> : <span />}
         <span className="muted">{page} / {pages}</span>
-        {page < pages ? <Link href={link(page + 1)}>পরের →</Link> : <span />}
-      </div>
+        {page < pages ? <Link href={link(page + 1)}>পরের<Icon name="right" size={16} /></Link> : <span />}
+      </nav>
     </>
   );
 }
