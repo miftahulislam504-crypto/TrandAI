@@ -73,3 +73,14 @@ Islamic Products ডিসেম্বরের মধ্যে চালু ক
 - seed বসেছে: electronics ৪, mobile-accessories ১, beauty ৭, sports ৬, bags-footwear ৩, baby ৮ (সব বন্ধ ক্যাটাগরি)।
 - এখনও ফাঁকা: islamic, health-wellness, grocery, automotive, gifts-lifestyle, watches-jewellery (১)। রাউন্ড ৩ এগুলোর জন্য।
 - রাউন্ড ৩: ৬৬টা slug Daraz-এর মেনু থেকে, বাজেট ১২৫। চালানোর আগে ২-৩ ঘণ্টা অপেক্ষা।
+
+## রাউন্ড ৩-এর ফল (২০২৬-১১-২১)
+
+- ১০১টা ক্যাটাগরি যাচাই, ব্লক নেই। সব ১৫ ক্যাটাগরিতে এখন অন্তত ১টা যাচাই-করা seed।
+- সোল্ড/রেটিং কভারেজ কম হওয়ায় বাদ: auto-parts-spares, motorcycle-parts-spares, tires-tubes, laptop-bag, women-muslim-wear-accessories, pancake-waffle-mixes, kids-watches-wsj, dresses-jumpsuits।
+- পরের ধাপ: Wave ২ স্মোক টেস্ট (Islamic আগে, রমজানের আগে ডেটা জমাতে)।
+
+## সব ক্যাটাগরি একসাথে চালু (২০২৬-১১-২১)
+
+- ১৫টাই `enabled: true`, লক্ষ্য ১৫১০ প্রোডাক্ট, রোজ ~১৭৫ অনুরোধ।
+- বাকি: Supabase migration চালানো, প্রথম রান লগ দেখা, health-wellness-এর পণ্য পর্যালোচনা।

@@ -309,18 +309,16 @@ class DisabledCategoryTests(unittest.TestCase):
         by_cat, _, _, _ = run_daraz.collect(a, self.CFG2, self.CATS2, only="beauty")
         self.assertEqual(list(by_cat), ["beauty"])
 
-    def test_shipped_config_has_four_disabled_categories(self):
+    def test_shipped_config_has_all_phase9_categories_enabled(self):
+        """Phase 9 শেষে ১৫টা ক্যাটাগরিই চালু ও প্রত্যেকের seed আছে।"""
         cfgs = run_daraz.load_config()
         cats = {c["slug"]: c for c in cfgs[1]["categories"]}
-        for slug in ("electronics", "beauty", "baby", "sports"):
-            self.assertIs(cats[slug]["enabled"], False)
-            self.assertIn(slug, cfgs[0]["seeds"])
-        # বিউটি ও বেবির seed Discovery রাউন্ড ১-এ মিলেছে; ইলেকট্রনিক্স/স্পোর্টস রাউন্ড ২-এর অপেক্ষায়
-        self.assertGreaterEqual(len(cfgs[0]["seeds"]["beauty"]), 1)
-        self.assertGreaterEqual(len(cfgs[0]["seeds"]["baby"]), 1)
+        self.assertEqual(len(cats), 15)
+        for slug, c in cats.items():
+            self.assertTrue(c["enabled"], slug)
+            self.assertGreaterEqual(len(cfgs[0]["seeds"][slug]), 1, slug)
         for slug in ("fashion", "home", "kitchen"):
-            self.assertTrue(cats[slug]["enabled"])
-            self.assertGreaterEqual(len(cfgs[0]["seeds"][slug]), 8)
+            self.assertGreaterEqual(len(cfgs[0]["seeds"][slug]), 7)
 
     def test_shipped_seeds_respect_daraz_robots(self):
         """Daraz robots.txt /catalog/ (কীওয়ার্ড সার্চ) নিষিদ্ধ করেছে: শিপ করা seed-এ keyword টাইপ থাকা চলবে না।"""
@@ -382,11 +380,14 @@ class CategoryConfigConsistencyTests(unittest.TestCase):
         self.assertIsNone(check_total(self.cfgs()[1]))
 
     def test_duplicate_detector_catches_a_clash(self):
-        """উপরের শেয়ার-URL যাচাই সত্যিই ধরে কি না: বন্ধ ক্যাটাগরি চালু করলে fashion-এর সাথে সংঘাত বাধে।"""
+        """শেয়ার-URL যাচাই সত্যিই ধরে কি না: এখন সব চালু, তাই ক্যাটাগরিগুলোর seed URL আলাদা থাকতে হবে।
+        (আগে এখানে fashion আর bags-footwear-এর সংঘাত দেখানো হতো; Phase 9-এ ওই URL fashion থেকে সরেছে।)"""
         daraz, cats = self.cfgs()
         fashion = {s["url"] for s in daraz["seeds"]["fashion"]}
         bags = {s["url"] for s in daraz["seeds"]["bags-footwear"]}
-        self.assertTrue(fashion & bags, "bags-footwear চালুর আগে fashion থেকে ওই URL সরাতে হবে")
+        watches = {s["url"] for s in daraz["seeds"]["watches-jewellery"]}
+        self.assertFalse(fashion & bags)
+        self.assertFalse(fashion & watches)
 
 
 class ImagePipelineTests(unittest.TestCase):

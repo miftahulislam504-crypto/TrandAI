@@ -63,8 +63,9 @@ class CapacityTests(unittest.TestCase):
         daraz = json.loads((ROOT / "config" / "daraz.json").read_text(encoding="utf-8"))
         cats = json.loads((ROOT / "config" / "categories.json").read_text(encoding="utf-8"))
         self.assertIsNone(capacity.check_total(cats))
-        self.assertGreater(capacity.estimate(daraz, cats, include_disabled=True)["products"],
-                           capacity.estimate(daraz, cats)["products"])
+        # সব ক্যাটাগরি চালু হলে বন্ধসহ ও বন্ধ ছাড়া হিসাব সমান; কোনোটা বন্ধ থাকলে বন্ধসহ বেশি
+        self.assertGreaterEqual(capacity.estimate(daraz, cats, include_disabled=True)["products"],
+                                capacity.estimate(daraz, cats)["products"])
 
     def test_report_mentions_budget_warning(self):
         text = capacity.report(DARAZ, CATS, 40, False, 100, 6)

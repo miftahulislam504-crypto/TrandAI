@@ -27,15 +27,7 @@
       },
       {
         "type": "category",
-        "url": "https://www.daraz.com.bd/womens-bags/"
-      },
-      {
-        "type": "category",
         "url": "https://www.daraz.com.bd/womens-dresses/"
-      },
-      {
-        "type": "category",
-        "url": "https://www.daraz.com.bd/mens-sneakers/"
       },
       {
         "type": "category",
@@ -52,10 +44,6 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/mens-fashion/"
-      },
-      {
-        "type": "category",
-        "url": "https://www.daraz.com.bd/jewellery-fashion/"
       }
     ],
     "home": [
@@ -166,6 +154,18 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/audio/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/computing-peripherals-accessories/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/tv-accessories/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/gaming-gadgets/"
       }
     ],
     "beauty": [
@@ -196,6 +196,18 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/bath-body/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/skincare-beauty/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/hair-care-beauty/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-make-up/"
       }
     ],
     "baby": [
@@ -230,6 +242,22 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/boys-clothing/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/feeding/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-personal-care/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-gear/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/toys-games/"
       }
     ],
     "sports": [
@@ -256,6 +284,18 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/badminton/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/dumbells/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/boxing-martial-arts-mma/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/camping-hiking/"
       }
     ],
     "bags-footwear": [
@@ -270,25 +310,154 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/womens-shoes/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-bags/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-shoes/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/travels/"
       }
     ],
     "watches-jewellery": [
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/jewellery-fashion/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-watches/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-watches/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/shop-womens-jewellery/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-jewellery/"
       }
     ],
     "mobile-accessories": [
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/headphones-headsets/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mobiles-tablets-accessories/"
       }
     ],
-    "islamic": [],
-    "health-wellness": [],
-    "gifts-lifestyle": [],
-    "grocery": [],
-    "automotive": []
+    "islamic": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-abayas-and-hijabs/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/men-muslim-wear/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/outerwear/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/womens-hijabs/"
+      }
+    ],
+    "health-wellness": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/personal-care/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/mens-grooming/"
+      }
+    ],
+    "gifts-lifestyle": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/stationery-craft/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/books-magazines/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/fan-shop-collectibles/"
+      }
+    ],
+    "grocery": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/groceries-baking-cooking-cooking-ingredients/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/snacks/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/candy-chocolate/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/breakfast/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/powdered-spices/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/groceries-beverages-uht-milk-milk-powder/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/honey/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/groceries-fresh-produce/"
+      }
+    ],
+    "automotive": [
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/motorcycle-riding-gear/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/interior-accessories/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/exterior-accessories/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/motorcycle-helmets/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/automotive-exterior-vehicle-care/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/oils-fluids/"
+      }
+    ]
   },
   "_robots_note": "Daraz robots.txt `/catalog/` নিষিদ্ধ, তাই কীওয়ার্ড seed সরানো হয়েছে (পুরনো তালিকা `_keyword_seeds_removed`-এ)। seed এখন Category Discovery-তে যাচাই-করা ক্যাটাগরি (২০২৬-১১-১৯)। electronics ও sports-এর slug এখনও মেলেনি, তাই খালি ও ক্যাটাগরি বন্ধ। `/*from=` প্যারামিটার নিষিদ্ধ, URL-এ from= যোগ করা যাবে না।",
   "_keyword_seeds_removed": {
@@ -390,5 +559,7 @@
     ]
   },
   "_split_note": "womens-bags, mens-sneakers (bags-footwear) ও jewellery-fashion (watches-jewellery) এখনও fashion-এর seed-তেও আছে, কারণ নতুন ক্যাটাগরি বন্ধ; এখন fashion থেকে সরালে ওই প্রোডাক্টের রোজকার ট্র্যাকিং থেমে যেত। bags-footwear বা watches-jewellery চালুর সময় একই সাথে fashion থেকে ওই URL মুছতে হবে (নইলে প্রথম ক্যাটাগরিতেই বসে, টেস্ট ধরে)। খালি seed = Discovery রাউন্ড ২-এ যাচাই-করা slug মেলেনি; অনুমানে slug বসানো হয়নি।",
-  "_round2_note": "Discovery রাউন্ড ২ (২০২৬-১১-২০): ২৭টা slug যাচাই হয়েছে (ajax JSON, আইটেম ও সোল্ড-কাউন্ট সহ)। শুধু বন্ধ ক্যাটাগরিতে বসেছে; চালু তিন ক্যাটাগরিতে (fashion, home, kitchen) হাত দেওয়া হয়নি। ওগুলোতে যোগ করার মতো যাচাই-করা slug: fashion -> womens-kurtis, mens-polo-shirts; kitchen -> cookware, dinnerware-sets, rice-cookers। Wave ১ বাড়ানোর সিদ্ধান্তে বসবে। মনে রাখুন: cycling-এ সোল্ড-কাউন্ট কভারেজ ৬২%, dinnerware-sets-এ ৭০%, polo-shirts-এ ৮২%, বাকি প্রায় সবই ৯০%+। baby-strollers (১৬ পণ্য) ও sports-outdoors (৫ পণ্য) খুব ছোট, তাই seed নয়।"
+  "_round2_note": "Discovery রাউন্ড ২ (২০২৬-১১-২০): ২৭টা slug যাচাই হয়েছে (ajax JSON, আইটেম ও সোল্ড-কাউন্ট সহ)। শুধু বন্ধ ক্যাটাগরিতে বসেছে; চালু তিন ক্যাটাগরিতে (fashion, home, kitchen) হাত দেওয়া হয়নি। ওগুলোতে যোগ করার মতো যাচাই-করা slug: fashion -> womens-kurtis, mens-polo-shirts; kitchen -> cookware, dinnerware-sets, rice-cookers। Wave ১ বাড়ানোর সিদ্ধান্তে বসবে। মনে রাখুন: cycling-এ সোল্ড-কাউন্ট কভারেজ ৬২%, dinnerware-sets-এ ৭০%, polo-shirts-এ ৮২%, বাকি প্রায় সবই ৯০%+। baby-strollers (১৬ পণ্য) ও sports-outdoors (৫ পণ্য) খুব ছোট, তাই seed নয়।",
+  "_round3_note": "Discovery রাউন্ড ৩ (২০২৬-১১-২১): ১০১টা ক্যাটাগরি যাচাই, ব্লক হয়নি। সব ফাঁকা ক্যাটাগরির seed বসেছে। বাদ দেওয়া হয়েছে যেগুলোর সোল্ড/রেটিং কভারেজ কম (স্কোরিং সিগন্যাল দুর্বল হবে): auto-parts-spares ১৮%, motorcycle-parts-spares ৩২%, tires-tubes ২৫%, laptop-bag ০%, women-muslim-wear-accessories ৩৮%, pancake-waffle-mixes ২%, kids-watches-wsj ৬২%, dresses-jumpsuits ৪৫%। চালু তিন ক্যাটাগরিতে হাত পড়েনি; যোগ করার মতো যাচাই-করা slug: home -> furniture, bath, cleaning-2, laundry-and-home-care, home-improvement; kitchen -> bakeware, coffee-tea-kitchenware (সাথে রাউন্ড ২-এর cookware, dinnerware-sets, rice-cookers); fashion -> womens-kurtis, mens-polo-shirts, womens-traditional-clothing।",
+  "_all_enabled_note": "২০২৬-১১-২১: Phase 9-এর ১৫টা ক্যাটাগরি একসাথে চালু। fashion থেকে womens-bags, mens-sneakers, jewellery-fashion সরেছে (এখন bags-footwear ও watches-jewellery-র নিজের seed)।"
 }
