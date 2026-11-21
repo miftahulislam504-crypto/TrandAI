@@ -65,3 +65,11 @@ Islamic Products ডিসেম্বরের মধ্যে চালু ক
 - স্কোরিং ১৪৩, ম্যাচিং ৮১, রিভিউ ইন্টেলিজেন্স ৫১, অ্যালার্ট ৩৬, ব্যাকটেস্ট ২৬, tools ১৭: কোনোটা ভাঙেনি।
 - ড্যাশবোর্ডে কোনো বদল নেই।
 - **আসল Daraz, আসল Google ও আসল Supabase-এ চালাইনি।** নতুন migration আসল PostgreSQL-এ চালাইনি (আমার এনভায়রনমেন্টে PostgreSQL নেই); এটা সরল `insert ... on conflict do nothing`, তবু Supabase-এ চালানোর পর `/health`-এ ক্যাটাগরি দেখে নিন।
+
+## Discovery রাউন্ড ২-এর ফল (২০২৬-১১-২০) ও রাউন্ড ৩
+
+- ১৪৭টা slug-এর মধ্যে ২৭টা কাজ করেছে। ~৭০টা অনুমানের slug Daraz-এ নেই (JSON-এর বদলে HTML ফেরত)।
+- `watches`, `mens-watches`, `womens-watches`-এ টানা ৩ ব্লক, রান থেমেছে। তাই তালিকার শেষের ৪৭টা (ব্যাগ-জুতা, হেলথ, গিফট, গ্রোসারি, অটোমোটিভ) চেষ্টাই হয়নি।
+- seed বসেছে: electronics ৪, mobile-accessories ১, beauty ৭, sports ৬, bags-footwear ৩, baby ৮ (সব বন্ধ ক্যাটাগরি)।
+- এখনও ফাঁকা: islamic, health-wellness, grocery, automotive, gifts-lifestyle, watches-jewellery (১)। রাউন্ড ৩ এগুলোর জন্য।
+- রাউন্ড ৩: ৬৬টা slug Daraz-এর মেনু থেকে, বাজেট ১২৫। চালানোর আগে ২-৩ ঘণ্টা অপেক্ষা।
