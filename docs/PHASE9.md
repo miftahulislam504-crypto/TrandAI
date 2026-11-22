@@ -84,3 +84,9 @@ Islamic Products ডিসেম্বরের মধ্যে চালু ক
 
 - ১৫টাই `enabled: true`, লক্ষ্য ১৫১০ প্রোডাক্ট, রোজ ~১৭৫ অনুরোধ।
 - বাকি: Supabase migration চালানো, প্রথম রান লগ দেখা, health-wellness-এর পণ্য পর্যালোচনা।
+
+## প্রথম ড্রাই-রান ও রান ভাগ (২০২৬-১১-২১)
+
+- ১৪১৯ আইটেম, ১৪/১৫ ক্যাটাগরি পুরো। ১০৪ অনুরোধে ৩ ব্লক, automotive-এর ৩ seed বাদ।
+- সমাধান: রান ৩ ভাগে (`--shard`), প্রতি ভাগে ~৩৪ seed, আলাদা জব।
+- ভাগ: ১ = automotive, bags-footwear, health-wellness, kitchen, sports; ২ = baby, fashion, grocery, mobile-accessories, watches-jewellery; ৩ = beauty, electronics, gifts-lifestyle, home, islamic।

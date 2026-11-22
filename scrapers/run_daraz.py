@@ -4,6 +4,7 @@
 মোড:
   --smoke    ১টা seed, ১ পেজ, ১টা প্রোডাক্ট পেজ, ১ বার রিভিউ। DB লাগে না। কী ফিল্ড পাওয়া যাচ্ছে তার রিপোর্ট দেয়।
   --dry-run  পুরো ডিসকভারি চলে কিন্তু DB-তে কিছু লেখে না।
+  --shard K/N  চালু ক্যাটাগরি N ভাগে ভাগ করে শুধু K নম্বর ভাগ (এক রানে ~১০০ অনুরোধের বেশি করলে Daraz ব্লক করে)।
   (কিছু না দিলে) পুরো রান: SUPABASE_URL ও SUPABASE_SERVICE_KEY env লাগবে।
 """
 from __future__ import annotations
@@ -54,8 +55,38 @@ def coverage(items: list[dict]) -> dict:
             for f in COVERAGE_FIELDS}
 
 
+def parse_shard(text: str) -> tuple[int, int]:
+    """'2/3' -> (2, 3)। ভুল হলে ValueError।"""
+    try:
+        k, n = (int(x) for x in text.split("/"))
+    except ValueError:
+        raise ValueError(f"--shard 'K/N' আকারে দিন (যেমন 2/3), পেলাম: {text!r}") from None
+    if not 1 <= k <= n:
+        raise ValueError(f"--shard-এ 1 <= K <= N হতে হবে, পেলাম: {text!r}")
+    return k, n
+
+
+def shard_slugs(daraz_cfg: dict, cats_cfg: dict, k: int, n: int) -> set[str]:
+    """চালু ক্যাটাগরিগুলো n ভাগে ভাগ করে k নম্বর ভাগের slug দেয় (k ১ থেকে)।
+
+    কেন: Daraz এক সেশনে ~১০০ অনুরোধের পর ব্লক করে (Phase 9-এর ড্রাই-রানে দেখা গেছে)। প্রতিটা ভাগ আলাদা জবে (আলাদা রানার) চলে।
+    ভাগ নির্ধারিত: seed-সংখ্যায় ভারী ক্যাটাগরি আগে, সবচেয়ে হালকা ভাগে বসে; সমান হলে কনফিগের ক্রম। সব ভাগ মিলে
+    প্রতিটা চালু ক্যাটাগরি ঠিক একবার।"""
+    enabled = [c["slug"] for c in cats_cfg["categories"] if c.get("enabled", True) is not False]
+    weight = {slug: max(1, len(daraz_cfg["seeds"].get(slug) or [])) for slug in enabled}
+    order = sorted(enabled, key=lambda slug: (-weight[slug], enabled.index(slug)))
+    load = [0] * n
+    mine: set[str] = set()
+    for slug in order:
+        i = min(range(n), key=lambda j: (load[j], j))
+        load[i] += weight[slug]
+        if i == k - 1:
+            mine.add(slug)
+    return mine
+
+
 def collect(adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, only: str | None = None,
-            smoke: bool = False, max_pages: int | None = None):
+            smoke: bool = False, max_pages: int | None = None, shard: tuple[int, int] | None = None):
     """সব ক্যাটাগরির আইটেম জড়ো করে। ফেরত: ({slug: [item]}, diagnostics, errors, circuit_open)।"""
     s = daraz_cfg["settings"]
     pages = max_pages or s.get("max_pages_per_seed", 6)
@@ -64,10 +95,13 @@ def collect(adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, only: str | 
     errors: list[str] = []
     seen: set[str] = set()
     circuit = False
+    mine = shard_slugs(daraz_cfg, cats_cfg, *shard) if shard and not only else None
 
     for cat in cats_cfg["categories"]:
         slug = cat["slug"]
         if only and slug != only:
+            continue
+        if mine is not None and slug not in mine:
             continue
         if not only and cat.get("enabled", True) is False:
             continue                       # বন্ধ ক্যাটাগরি রোজকার রানে নয়; --category দিয়ে নাম ধরলে চলে (স্মোক টেস্টের জন্য)
@@ -130,10 +164,13 @@ def snapshot_row(item: dict, listing_id: int, captured_on: str) -> dict:
 # ------------------------------------------------------------------ পুরো রান
 def run_pipeline(db, adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, now: datetime,
                  only: str | None = None, max_pages: int | None = None,
-                 detail_limit: int | None = None, reviews_limit: int | None = None) -> dict:
+                 detail_limit: int | None = None, reviews_limit: int | None = None,
+                 shard: tuple[int, int] | None = None) -> dict:
     s = daraz_cfg["settings"]
-    detail_limit = s.get("detail_limit", 30) if detail_limit is None else detail_limit
-    reviews_limit = s.get("reviews_limit", 20) if reviews_limit is None else reviews_limit
+    n_shards = shard[1] if shard and not only else 1
+    # settings-এর detail_limit/reviews_limit দৈনিক মোট; ভাগ করে চালালে প্রতি ভাগে মোটের n ভাগের এক ভাগ (মোট অনুরোধ আগের মতোই)
+    detail_limit = math.ceil(s.get("detail_limit", 30) / n_shards) if detail_limit is None else detail_limit
+    reviews_limit = math.ceil(s.get("reviews_limit", 20) / n_shards) if reviews_limit is None else reviews_limit
     now_iso, today = now.isoformat(), bd_today(now)
 
     src = db.select("sources", {"slug": "eq.daraz", "select": "id"})
@@ -147,7 +184,7 @@ def run_pipeline(db, adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, now
                      "reviews": 0, "errors": [], "notes": [], "circuit_open": False, "coverage": {}, "diags": []}
     status = "failed"
     try:
-        by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, only, False, max_pages)
+        by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, only, False, max_pages, shard)
         summary.update(diags=diags, circuit_open=circuit)
         summary["errors"] += errors
 
@@ -348,10 +385,15 @@ def main(argv=None) -> int:
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--category", help="শুধু এই ক্যাটাগরি (fashion/home/kitchen)")
+    ap.add_argument("--shard", help="K/N: চালু ক্যাটাগরির N ভাগের K নম্বর ভাগ (যেমন 2/3)। --category দিলে এটা বাদ")
     ap.add_argument("--max-pages", type=int)
     ap.add_argument("--detail-limit", type=int)
     ap.add_argument("--reviews-limit", type=int)
     args = ap.parse_args(argv)
+    try:
+        shard = parse_shard(args.shard) if args.shard else None
+    except ValueError as e:
+        ap.error(str(e))
 
     daraz_cfg, cats_cfg = load_config()
     adapter = build_adapter(daraz_cfg["settings"])
@@ -362,7 +404,7 @@ def main(argv=None) -> int:
         return 0 if res["sample_item"] else 1
 
     if args.dry_run:
-        by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, args.category, False, args.max_pages)
+        by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, args.category, False, args.max_pages, shard)
         items = [it for its in by_cat.values() for it in its]
         res = {"diags": diags, "errors": errors, "coverage": coverage(items), "sample_item": items[0] if items else None,
                "product": None, "reviews": None, "client_stats": adapter.client.stats}
@@ -376,7 +418,7 @@ def main(argv=None) -> int:
         return 1
     now = datetime.now(timezone.utc)
     summary = run_pipeline(db, adapter, daraz_cfg, cats_cfg, now, args.category, args.max_pages,
-                           args.detail_limit, args.reviews_limit)
+                           args.detail_limit, args.reviews_limit, shard)
     write_outputs("run-summary", summary, run_markdown(summary))
     return 0 if summary["status"] != "failed" else 1
 

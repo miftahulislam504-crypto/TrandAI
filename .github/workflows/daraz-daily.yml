@@ -25,8 +25,15 @@ concurrency:
 
 jobs:
   scrape:
+    # Daraz এক সেশনে ~১০০ অনুরোধের পর ব্লক করে (Phase 9 ড্রাই-রান), তাই চালু ক্যাটাগরি ৩ ভাগে ভাগ হয়ে একের পর এক আলাদা জবে (আলাদা রানারে) চলে।
+    # ভাগ নির্ধারিত (seed-সংখ্যা মিলিয়ে), কোড scrapers/run_daraz.py: shard_slugs। একটা ভাগ ব্যর্থ হলে বাকিগুলো চলে।
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,15 +47,23 @@ jobs:
           REVIEWER_HASH_SALT: ${{ secrets.REVIEWER_HASH_SALT }}
           CATEGORY: ${{ inputs.category }}
           DRY_RUN: ${{ inputs.dry_run }}
+          SHARD: ${{ matrix.shard }}
         run: |
           ARGS=""
-          if [ -n "$CATEGORY" ]; then ARGS="$ARGS --category $CATEGORY"; fi
+          if [ -n "$CATEGORY" ]; then
+            # একটা ক্যাটাগরি হাতে চালালে ভাগের দরকার নেই: শুধু ১ নম্বর জব চলে, বাকিগুলো বাদ
+            if [ "$SHARD" != "1" ]; then echo "category দেওয়া আছে, এই ভাগ বাদ"; exit 0; fi
+            ARGS="$ARGS --category $CATEGORY"
+          else
+            ARGS="$ARGS --shard $SHARD/3"
+          fi
           if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           python -m scrapers.run_daraz $ARGS
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: daraz-daily
+          name: daraz-daily-${{ matrix.shard }}
           path: run-output/
           retention-days: 14
+          if-no-files-found: ignore

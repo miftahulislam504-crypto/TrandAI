@@ -390,6 +390,56 @@ class CategoryConfigConsistencyTests(unittest.TestCase):
         self.assertFalse(fashion & watches)
 
 
+class ShardTests(unittest.TestCase):
+    def cfgs(self):
+        return run_daraz.load_config()
+
+    def test_shards_partition_enabled_categories_exactly_once(self):
+        daraz, cats = self.cfgs()
+        enabled = {c["slug"] for c in cats["categories"] if c.get("enabled", True) is not False}
+        parts = [run_daraz.shard_slugs(daraz, cats, k, 3) for k in (1, 2, 3)]
+        self.assertEqual(set().union(*parts), enabled)
+        self.assertEqual(sum(len(p) for p in parts), len(enabled))      # কোনোটা দুই ভাগে নেই
+        self.assertTrue(all(parts))                                      # কোনো ভাগ ফাঁকা নয়
+
+    def test_shards_are_balanced_and_deterministic(self):
+        daraz, cats = self.cfgs()
+        load = [sum(len(daraz["seeds"][s]) for s in run_daraz.shard_slugs(daraz, cats, k, 3)) for k in (1, 2, 3)]
+        self.assertLessEqual(max(load) - min(load), 6)
+        self.assertLessEqual(max(load), 45)                              # ডিসকভারি অনুরোধ ১০০-র অনেক নিচে
+        self.assertEqual(run_daraz.shard_slugs(daraz, cats, 2, 3), run_daraz.shard_slugs(daraz, cats, 2, 3))
+
+    def test_collect_visits_only_its_shard(self):
+        daraz, cats = self.cfgs()
+        mine = run_daraz.shard_slugs(daraz, cats, 1, 3)
+        by_cat, _, _, _ = run_daraz.collect(FakeAdapter(), daraz, cats, shard=(1, 3))
+        self.assertEqual(set(by_cat), mine)
+
+    def test_category_flag_overrides_shard(self):
+        daraz, cats = self.cfgs()
+        other = next(c["slug"] for c in cats["categories"]
+                     if c["slug"] not in run_daraz.shard_slugs(daraz, cats, 1, 3))
+        by_cat, _, _, _ = run_daraz.collect(FakeAdapter(), daraz, cats, only=other, shard=(1, 3))
+        self.assertEqual(list(by_cat), [other])
+
+    def test_parse_shard(self):
+        self.assertEqual(run_daraz.parse_shard("2/3"), (2, 3))
+        for bad in ("0/3", "4/3", "x", "1/", "2"):
+            with self.assertRaises(ValueError):
+                run_daraz.parse_shard(bad)
+
+    def test_pipeline_splits_detail_and_review_limits_across_shards(self):
+        cfg = {"settings": {**CFG["settings"], "detail_limit": 6, "reviews_limit": 6}, "seeds": CFG["seeds"]}
+        adapter = FakeAdapter({"saree": [item(str(i)) for i in range(1, 6)]})
+        db = FakeDB()
+        run_daraz.run_pipeline(db, adapter, cfg, CATS, NOW, shard=(1, 3))
+        self.assertEqual(len(adapter.products), 2)                       # ceil(6/3), শার্ড ১ = fashion
+        self.assertEqual(len({e for e, _ in adapter.review_pages}), 2)
+        adapter2 = FakeAdapter({"saree": [item(str(i)) for i in range(1, 6)]})
+        run_daraz.run_pipeline(FakeDB(), adapter2, cfg, CATS, NOW)
+        self.assertEqual(len(adapter2.products), 3)                      # শার্ড ছাড়া: সীমা ৬, কিন্তু fashion-এর লক্ষ্য ৩টা আইটেম
+
+
 class ImagePipelineTests(unittest.TestCase):
     def test_listing_rows_carry_image_url_only_when_present(self):
         adapter = FakeAdapter({"saree": [item("1", image_url="https://cdn/a.jpg"), item("2")]})
