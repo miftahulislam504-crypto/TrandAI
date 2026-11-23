@@ -90,3 +90,4 @@ Islamic Products ডিসেম্বরের মধ্যে চালু ক
 - ১৪১৯ আইটেম, ১৪/১৫ ক্যাটাগরি পুরো। ১০৪ অনুরোধে ৩ ব্লক, automotive-এর ৩ seed বাদ।
 - সমাধান: রান ৩ ভাগে (`--shard`), প্রতি ভাগে ~৩৪ seed, আলাদা জব।
 - ভাগ: ১ = automotive, bags-footwear, health-wellness, kitchen, sports; ২ = baby, fashion, grocery, mobile-accessories, watches-jewellery; ৩ = beauty, electronics, gifts-lifestyle, home, islamic।
+- হালনাগাদ (২০২৬-১১-২৩): `detail_limit` ২৪০ করায় ভাগ ৩ থেকে ৫ হয়েছে (workflow-এর `shard: [1, 2, 3, 4, 5]` ও `--shard $SHARD/5`)। প্রতি ভাগে ডিসকভারি ~২২ + ডিটেইল ৪৮ = ~৭০ অনুরোধ, ড্রাই-রানে দেখা ~১০৪-এর ব্লক-সীমার নিচে। ৩ ভাগে হতো ~১১৬।
