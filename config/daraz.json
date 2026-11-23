@@ -10,7 +10,7 @@
     "jitter_seconds": 1.5,
     "block_limit": 3,
     "max_pages_per_seed": 6,
-    "detail_limit": 30,
+    "detail_limit": 60,
     "reviews_limit": 20,
     "reviews_max_pages": 2,
     "inactive_after_days": 30

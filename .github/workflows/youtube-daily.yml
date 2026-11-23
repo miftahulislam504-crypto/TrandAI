@@ -1,0 +1,71 @@
+name: YouTube Daily
+
+# YouTube Data API v3 থেকে ক্যাটাগরি-শব্দের ভিডিও ট্রেন্ড। রোজ ~৪০ শব্দ (~৪,০৪০ কোটা-ইউনিট, সীমা ১০,০০০)।
+# YOUTUBE_API_KEY না থাকলে স্ক্রিপ্ট নিজে বাদ দেয় (exit 0), তাই key দেওয়ার আগে রাখলেও ক্ষতি নেই।
+on:
+  schedule:
+    - cron: "30 22 * * *"   # বাংলাদেশে ভোর ৪:৩০ (Daraz Daily ও Trends-এর পরে)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "ডাটাবেজে না লিখে শুধু দেখুন (কোটা খরচ হয়)"
+        type: boolean
+        default: false
+      force:
+        description: "সদ্য আনা শব্দও আবার আনুন"
+        type: boolean
+        default: false
+      category:
+        description: "শুধু এই ক্যাটাগরি (ফাঁকা = সব চালু ক্যাটাগরি)"
+        required: false
+        default: ""
+      limit:
+        description: "এই রানে সর্বোচ্চ কত শব্দ (ফাঁকা = config-এর মান)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: youtube-daily
+  cancel-in-progress: false
+
+jobs:
+  youtube:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+      - name: ইউনিট টেস্ট
+        run: python -m unittest discover -s youtube/tests -t .
+      - name: YouTube সংগ্রহ
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          FORCE: ${{ inputs.force }}
+          CATEGORY: ${{ inputs.category }}
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          args=()
+          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          [ "$FORCE" = "true" ] && args+=(--force)
+          [ -n "$CATEGORY" ] && args+=(--category "$CATEGORY")
+          [ -n "$LIMIT" ] && args+=(--limit "$LIMIT")
+          python -m youtube.run_youtube "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: youtube-summary
+          path: run-output/youtube-summary.*
+          if-no-files-found: ignore
+          retention-days: 14

@@ -33,6 +33,10 @@ const T = {
   listing_snapshots: [1, 2, 3].map((i) => ({ captured_on: `2026-11-1${i}`, price: 5000 + i * 100, rating_count: 100 + i, sold_count: 800 + i * 30, review_count: 70 + i })),
   reviews: [{ stars: 5, body: "খুব ভালো", reviewed_at: "2026-11-15", lang: "bn", suspected_fake: false, flags: ["counterfeit"], sentiment: 1, topics: ["quality", "price"] }],
   product_costs: [], trend_keywords: [], trend_points: [],
+  manual_signals: [
+    { id: 1, source: "infoneen", keyword: "air fryer", canonical_product_id: null, observed_on: "2026-11-20", value: 12000, unit: "সার্চ/মাস", link: "https://www.infoneen.com/x", note: `${WARN} সিজন ঈদের আগে` },
+    { id: 2, source: "tiktok_creative_center", keyword: "smart watch", canonical_product_id: null, observed_on: "2026-11-19", value: null, unit: null, link: null, note: "টপ ১০-এ ট্রেন্ডিং" },
+  ],
   ad_checks: [{ id: 1, keyword: "air fryer", canonical_product_id: 10, observed_on: "2026-11-18", active_ads: 120, advertisers: 14, oldest_start: "2026-09-03", new_30d: 30, note: `${WARN} হাতে-দেখা`, source: "manual" }],
 };
 const HEALTH = {
@@ -57,8 +61,8 @@ const mock = http.createServer((req, res) => {
 });
 
 const EMOJI = /[\p{Extended_Pictographic}\u2605\u2606\u2713\u2714\u2717\u2718\u2715\u2716\u26AA\u26AB\uFE0F]/u;
-const PAGES = ["/", "/products/1", "/watchlist", "/alerts", "/ads", "/matches", "/health"];
-const MUST = { "/products/1": ["scorehead", "bar-top", "dist"], "/alerts": ["card unseen", "chip danger"], "/health": ["status ok", "check-top"], "/ads": ['class="cards"'], "/matches": ["pair", "evidence"] };
+const PAGES = ["/", "/products/1", "/watchlist", "/alerts", "/ads", "/signals", "/matches", "/health"];
+const MUST = { "/products/1": ["scorehead", "bar-top", "dist"], "/alerts": ["card unseen", "chip danger"], "/health": ["status ok", "check-top"], "/ads": ['class="cards"'], "/signals": ['class="cards"', "Infoneen", "air fryer", "infoneen.com", "formrow signals"], "/matches": ["pair", "evidence"] };
 
 await new Promise((r) => mock.listen(0, r));
 const mockPort = mock.address().port, port = 3457;

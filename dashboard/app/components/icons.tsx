@@ -14,6 +14,7 @@ const PATHS: Record<string, string[]> = {
   alert: ["M12 4l9 16H3z", "M12 10v4", "M12 17.5v.01"],
   info: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M12 11v5", "M12 8v.01"],
   external: ["M7 17L17 7", "M9 7h8v8"],
+  bars: ["M5 20v-5", "M12 20V9", "M19 20V4"],
 };
 
 export type IconName = keyof typeof PATHS;

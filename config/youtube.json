@@ -1,0 +1,15 @@
+{
+  "_note": "YouTube Data API v3 (অফিসিয়াল, বিনামূল্যে কোটা ১০,০০০ ইউনিট/দিন)। শব্দ আসে config/trends.json-এর চালু ক্যাটাগরি থেকে। একটা শব্দে খরচ = search ১০০ + videos ১ = ১০১ ইউনিট, তাই দিনে ~৪০ শব্দ (~৪,০৪০ ইউনিট) নিরাপদ; সব শব্দ ঘুরতে ~৬ দিন। key: GitHub Secrets-এ YOUTUBE_API_KEY।",
+  "settings": {
+    "region": "BD",
+    "window_days": 30,
+    "max_results": 25,
+    "order": "viewCount",
+    "refresh_days": 14,
+    "max_keywords_per_run": 40,
+    "quota_budget": 6000,
+    "search_cost": 100,
+    "videos_cost": 1,
+    "sleep_seconds": 1.0
+  }
+}

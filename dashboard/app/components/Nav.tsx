@@ -8,6 +8,7 @@ const ITEMS: { href: string; label: string; icon: IconName; also?: string[] }[] 
   { href: "/watchlist", label: "নজরে", icon: "bookmark" },
   { href: "/alerts", label: "অ্যালার্ট", icon: "bell" },
   { href: "/ads", label: "Ads", icon: "megaphone" },
+  { href: "/signals", label: "সিগন্যাল", icon: "bars" },
   { href: "/health", label: "হেলথ", icon: "pulse" },
 ];
 
