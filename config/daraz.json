@@ -86,6 +86,18 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/all-fans/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/furniture/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/bath/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/cleaning-2/"
       }
     ],
     "kitchen": [
@@ -136,6 +148,10 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/water-dispensers-purifiers/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/coffee-tea-kitchenware/"
       }
     ],
     "electronics": [
@@ -208,6 +224,10 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/womens-make-up/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/health-beauty-tools/"
       }
     ],
     "baby": [
@@ -258,6 +278,14 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/toys-games/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-toddler-nursery/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/baby-toddler-toys-games/"
       }
     ],
     "sports": [
@@ -296,6 +324,14 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/camping-hiking/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/team-sports/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/outdoor-activities/"
       }
     ],
     "bags-footwear": [
@@ -322,6 +358,10 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/travels/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/bags-luggage/"
       }
     ],
     "watches-jewellery": [
@@ -372,6 +412,10 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/womens-hijabs/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/men-muslim-accessories/"
       }
     ],
     "health-wellness": [
@@ -430,6 +474,10 @@
       {
         "type": "category",
         "url": "https://www.daraz.com.bd/groceries-fresh-produce/"
+      },
+      {
+        "type": "category",
+        "url": "https://www.daraz.com.bd/groceries-baking-cooking-cooking-ingredients-seasoning/"
       }
     ],
     "automotive": [
@@ -561,5 +609,6 @@
   "_split_note": "womens-bags, mens-sneakers (bags-footwear) ও jewellery-fashion (watches-jewellery) এখনও fashion-এর seed-তেও আছে, কারণ নতুন ক্যাটাগরি বন্ধ; এখন fashion থেকে সরালে ওই প্রোডাক্টের রোজকার ট্র্যাকিং থেমে যেত। bags-footwear বা watches-jewellery চালুর সময় একই সাথে fashion থেকে ওই URL মুছতে হবে (নইলে প্রথম ক্যাটাগরিতেই বসে, টেস্ট ধরে)। খালি seed = Discovery রাউন্ড ২-এ যাচাই-করা slug মেলেনি; অনুমানে slug বসানো হয়নি।",
   "_round2_note": "Discovery রাউন্ড ২ (২০২৬-১১-২০): ২৭টা slug যাচাই হয়েছে (ajax JSON, আইটেম ও সোল্ড-কাউন্ট সহ)। শুধু বন্ধ ক্যাটাগরিতে বসেছে; চালু তিন ক্যাটাগরিতে (fashion, home, kitchen) হাত দেওয়া হয়নি। ওগুলোতে যোগ করার মতো যাচাই-করা slug: fashion -> womens-kurtis, mens-polo-shirts; kitchen -> cookware, dinnerware-sets, rice-cookers। Wave ১ বাড়ানোর সিদ্ধান্তে বসবে। মনে রাখুন: cycling-এ সোল্ড-কাউন্ট কভারেজ ৬২%, dinnerware-sets-এ ৭০%, polo-shirts-এ ৮২%, বাকি প্রায় সবই ৯০%+। baby-strollers (১৬ পণ্য) ও sports-outdoors (৫ পণ্য) খুব ছোট, তাই seed নয়।",
   "_round3_note": "Discovery রাউন্ড ৩ (২০২৬-১১-২১): ১০১টা ক্যাটাগরি যাচাই, ব্লক হয়নি। সব ফাঁকা ক্যাটাগরির seed বসেছে। বাদ দেওয়া হয়েছে যেগুলোর সোল্ড/রেটিং কভারেজ কম (স্কোরিং সিগন্যাল দুর্বল হবে): auto-parts-spares ১৮%, motorcycle-parts-spares ৩২%, tires-tubes ২৫%, laptop-bag ০%, women-muslim-wear-accessories ৩৮%, pancake-waffle-mixes ২%, kids-watches-wsj ৬২%, dresses-jumpsuits ৪৫%। চালু তিন ক্যাটাগরিতে হাত পড়েনি; যোগ করার মতো যাচাই-করা slug: home -> furniture, bath, cleaning-2, laundry-and-home-care, home-improvement; kitchen -> bakeware, coffee-tea-kitchenware (সাথে রাউন্ড ২-এর cookware, dinnerware-sets, rice-cookers); fashion -> womens-kurtis, mens-polo-shirts, womens-traditional-clothing।",
-  "_all_enabled_note": "২০২৬-১১-২১: Phase 9-এর ১৫টা ক্যাটাগরি একসাথে চালু। fashion থেকে womens-bags, mens-sneakers, jewellery-fashion সরেছে (এখন bags-footwear ও watches-jewellery-র নিজের seed)।"
+  "_all_enabled_note": "২০২৬-১১-২১: Phase 9-এর ১৫টা ক্যাটাগরি একসাথে চালু। fashion থেকে womens-bags, mens-sneakers, jewellery-fashion সরেছে (এখন bags-footwear ও watches-jewellery-র নিজের seed)।",
+  "_round4_note": "Discovery রাউন্ড ৪ (২০২৬-১১-২৩, daraz-categories.zip): প্রস্তাবিত ২৪টার মধ্যে ১২টা বসেছে (গ্রুপের শেষে, তাই আগের seed-এর অগ্রাধিকার বদলায়নি): islamic men-muslim-accessories; baby baby-toddler-nursery, baby-toddler-toys-games; bags-footwear bags-luggage; beauty health-beauty-tools; sports team-sports, outdoor-activities; grocery groceries-baking-cooking-cooking-ingredients-seasoning; home furniture, bath, cleaning-2; kitchen coffee-tea-kitchenware। বাকি ১২টা ইচ্ছাকৃত বসেনি। (ক) আগের রাউন্ডে কম সোল্ড/রেটিং কভারেজের কারণে বাদ-দেওয়া ৮টা: women-muslim-wear-accessories, kids-watches-wsj, laptop-bag, auto-parts-spares, motorcycle-parts-spares, tires-tubes, dresses-jumpsuits, pancake-waffle-mixes (স্কোরিং সিগন্যাল দুর্বল)। (খ) ভুল গ্রুপে বা অতি-বিস্তৃত ৪টা: oils-fluids (গাড়ির তেল, grocery-তে নয়), home-improvement (টুলস/DIY, sports নয়), এবং রুট ক্যাটাগরি fashion ও grocers-shop (বাকি seed-এর সাথে প্রায় পুরো মিলে যায়)।"
 }
