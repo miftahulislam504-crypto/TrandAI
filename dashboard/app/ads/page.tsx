@@ -68,6 +68,19 @@ export default async function Ads({ searchParams }: { searchParams: Record<strin
         <>
           <div className="stack">
             <section className="box">
+              <h3>শব্দটা Ads Library-তে খুলুন (এক ট্যাপে)</h3>
+              <form action="https://www.facebook.com/ads/library/" method="get" target="_blank" className="formrow ads-open">
+                <input type="hidden" name="active_status" value="active" />
+                <input type="hidden" name="ad_type" value="all" />
+                <input type="hidden" name="country" value="BD" />
+                <input type="hidden" name="media_type" value="all" />
+                <input type="hidden" name="search_type" value="keyword_unordered" />
+                <label className="field wide"><span>শব্দ</span><input name="q" type="text" required maxLength={80} placeholder="air fryer" /></label>
+                <button type="submit">Ads Library খুলুন <Icon name="external" size={16} /></button>
+              </form>
+              <p className="hint">নতুন ট্যাবে Bangladesh, সক্রিয় বিজ্ঞাপন দিয়ে খুলবে। দেশ বা শব্দ ফাঁকা দেখালে হাতে বসান। ফলাফল সংখ্যা দেখে নিচের ফর্মে লিখুন। এটা স্বয়ংক্রিয় সংগ্রহ নয়, শুধু খোলার ধাপ ছোট করে।</p>
+            </section>
+            <section className="box">
               <h3>একটা চেক দিন (প্রোডাক্টের ধরনের শব্দ)</h3>
               <form action={saveAdChecks} className="formrow ads">
                 <input type="hidden" name="back" value="/ads" />

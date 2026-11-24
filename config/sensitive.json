@@ -1,0 +1,58 @@
+{
+  "_note": "স্পর্শকাতর বা নিয়ন্ত্রিত পণ্য বাদ দেওয়ার নিয়ম (২০২৬-১১-২৩, আপনার নির্দেশে; তালিকা আমার ডিফল্ট, আপনি বদলাবেন)। প্রোডাক্টের টাইটেলে শব্দ/বাক্যাংশ মিললে সেটা (১) নতুন সংগ্রহে ঢোকে না (Daraz Daily-র Summary-তে কোন নিয়মে কী বাদ গেল দেখায়), (২) স্কোরিং ও ট্যাগের বাইরে থাকে (আগে ঢোকা ডেটাও)। ইংরেজি শব্দ পুরো-শব্দ মিলে (ছোট/বড় হাত সমান), বাংলা শব্দ টুকরো মিলে। `categories`: scope = নিচের scope_categories-এ; all = সব ক্যাটাগরিতে; বা নির্দিষ্ট তালিকা। `allow`: এই নিয়মের জন্য, টাইটেলে থাকলে মিল বাতিল (ভুল ধরা কমাতে)। ভুল ধরা বা বাদ-পড়া দেখলে শব্দ যোগ/বাদ দিন, কোড বদলাতে হবে না। বন্ধ করতে enabled: false।",
+  "enabled": true,
+  "scope_categories": ["health-wellness", "grocery", "beauty", "baby", "sports"],
+  "rules": [
+    {
+      "id": "medicine",
+      "label": "ওষুধ ও ওষুধের ধরন",
+      "categories": "scope",
+      "phrases": ["tablet", "tablets", "capsule", "capsules", "syrup", "injection", "ointment", "suppository", "eye drop", "eye drops", "nasal spray",
+                  "antibiotic", "antibiotics", "antacid", "painkiller", "pain killer", "prescription", "paracetamol", "napa", "ibuprofen", "omeprazole",
+                  "esomeprazole", "pantoprazole", "azithromycin", "amoxicillin", "ciprofloxacin", "metformin", "insulin", "prednisolone", "steroid",
+                  "ওষুধ", "ঔষধ", "ঔষধি", "ট্যাবলেট", "ক্যাপসুল", "সিরাপ", "ইনজেকশন", "অ্যান্টিবায়োটিক", "প্যারাসিটামল"],
+      "regex": ["\\b\\d+(?:\\.\\d+)?\\s?(?:mg|mcg|µg|iu)\\b"],
+      "allow": ["coffee capsule", "capsule coffee", "coffee pod", "tablet stand", "tablet holder", "tablet case", "tablet cover", "tablet pc", "tablet mount"]
+    },
+    {
+      "id": "supplement",
+      "label": "সাপ্লিমেন্ট ও ওজন-কমানোর পণ্য",
+      "categories": "scope",
+      "phrases": ["supplement", "supplements", "vitamin", "vitamins", "multivitamin", "omega 3", "omega-3", "collagen", "probiotic", "probiotics",
+                  "fat burner", "weight loss", "slimming", "diet pill", "diet pills", "immunity booster", "ভিটামিন", "সাপ্লিমেন্ট", "ওজন কমা", "ওজন কমানো"],
+      "allow": ["serum", "face wash", "facewash", "shampoo", "conditioner", "lotion", "soap", "body wash", "cream", "toner", "hair oil", "hair mask", "face mask", "sunscreen"]
+    },
+    {
+      "id": "sexual-wellness",
+      "label": "যৌন স্বাস্থ্য ও প্রাপ্তবয়স্ক পণ্য",
+      "categories": "all",
+      "phrases": ["condom", "condoms", "lubricant", "lube", "delay spray", "timing spray", "viagra", "libido", "penis", "breast enlargement",
+                  "sex toy", "sexual", "কনডম", "যৌন", "যৌনতা"],
+      "allow": []
+    },
+    {
+      "id": "infant-formula",
+      "label": "শিশুর ফর্মুলা দুধ (বিপণনে আইনি বিধিনিষেধ)",
+      "categories": "scope",
+      "phrases": ["infant formula", "baby formula", "formula milk", "follow-up formula", "follow up formula", "lactogen", "nan pro", "nan optipro",
+                  "aptamil", "similac", "enfamil", "dumex", "ইনফ্যান্ট ফর্মুলা", "ফর্মুলা দুধ"],
+      "allow": ["bottle", "bottle sterilizer", "formula dispenser", "milk warmer", "formula maker"]
+    },
+    {
+      "id": "tobacco-alcohol",
+      "label": "তামাক, ভেপ ও অ্যালকোহল",
+      "categories": "all",
+      "phrases": ["cigarette", "cigarettes", "cigar", "tobacco", "vape", "vaping", "e-cigarette", "e cigarette", "hookah", "shisha", "nicotine",
+                  "zarda", "beer", "whisky", "whiskey", "vodka", "সিগারেট", "তামাক", "জর্দা", "খৈনী", "ভেপ", "হুক্কা"],
+      "allow": ["tobacco brown", "tobacco color", "tobacco colour", "tobacco leather", "tobacco wood"]
+    },
+    {
+      "id": "skin-lightening",
+      "label": "ত্বক-ফর্সা-করা ও স্টেরয়েড ক্রিম",
+      "categories": "scope",
+      "phrases": ["skin whitening", "whitening cream", "fairness cream", "skin bleaching", "bleaching cream", "hydroquinone", "clobetasol", "betamethasone",
+                  "ফর্সা করার", "ফর্সা হওয়ার ক্রিম"],
+      "allow": []
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+name: Adapter Probe (Cartup, Othoba, Bagdoom)
+
+# হাতে চালানোর জন্য: Actions ট্যাব -> Adapter Probe -> Run workflow। ~৩০টা অনুরোধ, ~৩-৫ মিনিট।
+# কেন: adapter আসল লিস্টিং/প্রোডাক্ট পেজ না দেখে লেখা হবে না। ফল (artifact `adapter-probe`) পাঠালে আমি adapter জুড়ব।
+# robots.txt মানা হয়, ৩ সেকেন্ড পরপর, টানা ৩ ব্লকে থামে। Cloudflare/ক্যাপচা পাশ কাটানো হয় না।
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+      - name: ইউনিট টেস্ট
+        run: python -m unittest scrapers.tests.test_other_sources
+      - name: Probe
+        run: python -m scrapers.audit.adapter_probe
+      - name: Run summary-তে রিপোর্ট
+        if: always()
+        run: |
+          if [ -f run-output/adapter-probe.md ]; then cat run-output/adapter-probe.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: adapter-probe
+          path: |
+            run-output/adapter-probe.md
+            run-output/adapter-probe.json
+            run-output/adapter-probe/
+          if-no-files-found: ignore
+          retention-days: 14

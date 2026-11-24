@@ -19,6 +19,7 @@ from pathlib import Path
 
 from scrapers.common.http import RobotsDisallowed, CircuitOpen, FetchError, PoliteClient
 from scrapers.common.supabase_rest import SupabaseError, SupabaseREST
+from scrapers import sensitive
 from scrapers.daraz import parse
 from scrapers.daraz.adapter import DarazAdapter
 
@@ -48,6 +49,19 @@ def build_adapter(settings: dict) -> DarazAdapter:
 
 
 # ------------------------------------------------------------------ ডিসকভারি
+def merge_sensitive(diags: list[dict]) -> dict:
+    """সব seed-এর স্পর্শকাতর-বাদ একসাথে: মোট, নিয়ম অনুযায়ী, কিছু উদাহরণ (ভুল ধরা চোখে পড়ার জন্য)।"""
+    out = {"count": 0, "by_rule": {}, "examples": []}
+    for d in diags:
+        sd = d.get("sensitive") or {}
+        out["count"] += sd.get("count", 0)
+        for k, v in (sd.get("by_rule") or {}).items():
+            out["by_rule"][k] = out["by_rule"].get(k, 0) + v
+        out["examples"] += sd.get("examples") or []
+    out["examples"] = out["examples"][:20]
+    return out
+
+
 def coverage(items: list[dict]) -> dict:
     n = len(items)
     return {f: {"count": sum(1 for i in items if i.get(f) is not None),
@@ -124,8 +138,9 @@ def collect(adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, only: str | 
             except Exception as e:  # noqa: BLE001 - একটা seed ব্যর্থ হলে বাকিগুলো চলবে
                 errors.append(f"{slug} {seed}: {type(e).__name__}: {e}")
                 continue
-            diags.append({"category": slug, **diag, "found": len(found)})
-            if not found:
+            found, dropped = sensitive.split(found, slug)      # স্পর্শকাতর পণ্য ঢোকে না (config/sensitive.json)
+            diags.append({"category": slug, **diag, "found": len(found), "sensitive": sensitive.summarize_dropped(dropped)})
+            if not found and not dropped:
                 errors.append(f"{slug} {seed}: আইটেম নেই ({'; '.join(diag['notes']) or 'কারণ অজানা'})")
             for it in found:
                 if it["external_id"] not in seen:
@@ -185,7 +200,7 @@ def run_pipeline(db, adapter: DarazAdapter, daraz_cfg: dict, cats_cfg: dict, now
     status = "failed"
     try:
         by_cat, diags, errors, circuit = collect(adapter, daraz_cfg, cats_cfg, only, False, max_pages, shard)
-        summary.update(diags=diags, circuit_open=circuit)
+        summary.update(diags=diags, circuit_open=circuit, sensitive=merge_sensitive(diags))
         summary["errors"] += errors
 
         existing = {r["external_id"]: r for r in db.select(
@@ -350,6 +365,11 @@ def run_markdown(s: dict) -> str:
     if s["circuit_open"]:
         L.append("- রান মাঝপথে থেমেছে (টানা ব্লক)")
     L += ["", "| ফিল্ড | % |", "|---|---|"] + [f"| {f} | {c['pct']}% |" for f, c in s["coverage"].items()]
+    sn = s.get("sensitive") or {}
+    if sn.get("count"):
+        L += ["", f"## স্পর্শকাতর পণ্য বাদ ({sn['count']}টা)", "- নিয়ম অনুযায়ী: " + ", ".join(f"{k} {v}" for k, v in sorted(sn["by_rule"].items()))]
+        L += [f"- `{e['rule']}` ({e['hit']}): {e['title']}" for e in sn["examples"][:12]]
+        L.append("- ভুল ধরা বা বাদ-পড়া দেখলে `config/sensitive.json`-এ শব্দ বদলান")
     if s.get("notes"):
         L += ["", "## নোট"] + [f"- {n}" for n in s["notes"]]
     if s["errors"]:

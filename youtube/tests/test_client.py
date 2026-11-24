@@ -86,6 +86,40 @@ class ClientTest(unittest.TestCase):
             with self.assertRaises(KeyRejected):
                 c.search("x", "2026-10-23T00:00:00Z", "BD", 5)
 
+    def test_forbidden_shows_googles_real_reason_and_a_fix_hint(self):
+        # key-র restriction হলে errors[0].reason শুধু "forbidden", আসল কারণ details-এ
+        body = {"error": {"code": 403, "message": "Requests from referer <empty> are blocked.",
+                          "errors": [{"reason": "forbidden"}], "status": "PERMISSION_DENIED",
+                          "details": [{"@type": "type.googleapis.com/google.rpc.ErrorInfo", "reason": "API_KEY_HTTP_REFERRER_BLOCKED"}]}}
+        c, _, _ = client(Resp(403, body))
+        with self.assertRaises(KeyRejected) as cm:
+            c.search("x", "2026-10-23T00:00:00Z", "BD", 5)
+        m = str(cm.exception)
+        self.assertIn("API_KEY_HTTP_REFERRER_BLOCKED", m)
+        self.assertIn("Requests from referer <empty> are blocked", m)
+        self.assertIn("Application restrictions None", m)
+
+    def test_service_disabled_hint(self):
+        body = {"error": {"code": 403, "message": "YouTube Data API v3 has not been used in project 123 before or it is disabled.",
+                          "errors": [{"reason": "accessNotConfigured"}],
+                          "details": [{"reason": "SERVICE_DISABLED"}]}}
+        c, _, _ = client(Resp(403, body))
+        with self.assertRaisesRegex(KeyRejected, "YouTube Data API v3 চালু করুন"):
+            c.search("x", "2026-10-23T00:00:00Z", "BD", 5)
+
+    def test_error_message_from_google_never_leaks_the_key(self):
+        body = {"error": {"code": 400, "message": f"API key {SECRET} not valid", "errors": [{"reason": "keyInvalid"}]}}
+        c, _, _ = client(Resp(400, body))
+        with self.assertRaises(KeyRejected) as cm:
+            c.search("x", "2026-10-23T00:00:00Z", "BD", 5)
+        self.assertNotIn(SECRET, str(cm.exception))
+        self.assertIn("***", str(cm.exception))
+
+    def test_plain_forbidden_still_gives_generic_hint(self):
+        c, _, _ = client(err(403, "forbidden"))
+        with self.assertRaisesRegex(KeyRejected, "restriction|চালু নেই"):
+            c.search("x", "2026-10-23T00:00:00Z", "BD", 5)
+
     def test_retries_server_error_then_succeeds(self):
         c, s, sleeps = client(Resp(503), Resp(200, {"items": [{"id": {"videoId": "a"}}]}))
         self.assertEqual(c.search("x", "2026-10-23T00:00:00Z", "BD", 5), ["a"])

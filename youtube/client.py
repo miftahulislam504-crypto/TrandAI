@@ -35,6 +35,35 @@ def _reason(r: requests.Response) -> str:
         return ""
 
 
+# Google-এর details[].reason (ErrorInfo) আসল কারণ বলে, যখন errors[0].reason শুধু "forbidden"। কী করতে হবে তার বাংলা ইঙ্গিত:
+_HINTS = {
+    "SERVICE_DISABLED": "key যে Google Cloud প্রজেক্টের, সেখানে YouTube Data API v3 চালু করুন (APIs & Services → Library)",
+    "accessNotConfigured": "key যে Google Cloud প্রজেক্টের, সেখানে YouTube Data API v3 চালু করুন (APIs & Services → Library)",
+    "API_KEY_SERVICE_BLOCKED": "key-র API restrictions-এ YouTube Data API v3 যোগ করুন (বা Don't restrict key)",
+    "API_KEY_HTTP_REFERRER_BLOCKED": "key-র Application restrictions None করুন (GitHub runner ব্রাউজার নয়, referrer থাকে না)",
+    "API_KEY_IP_ADDRESS_BLOCKED": "key-র Application restrictions None করুন (GitHub runner-এর IP প্রতিবার আলাদা)",
+    "API_KEY_ANDROID_APP_BLOCKED": "key-র Application restrictions None করুন",
+    "API_KEY_IOS_APP_BLOCKED": "key-র Application restrictions None করুন",
+    "API_KEY_INVALID": "key ভুল, কপি করার সময় বাড়তি ফাঁকা বা অক্ষর ঢুকেছে কি না দেখুন, বা key মুছে ফেলা হয়েছে",
+    "keyInvalid": "key ভুল, কপি করার সময় বাড়তি ফাঁকা বা অক্ষর ঢুকেছে কি না দেখুন, বা key মুছে ফেলা হয়েছে",
+}
+
+
+def _describe(r: requests.Response, key: str) -> tuple[str, str]:
+    """(ঠিক কোন কারণ, সংক্ষিপ্ত বিবরণ); key ফাঁস ঠেকাতে উত্তরের লেখা থেকে key মুছে দেওয়া হয়।"""
+    try:
+        err = r.json().get("error") or {}
+    except (ValueError, AttributeError):
+        return "", ""
+    detail = ""
+    for d in err.get("details") or []:
+        if isinstance(d, dict) and d.get("reason"):
+            detail = str(d["reason"])
+            break
+    msg = str(err.get("message", ""))[:240].replace(key, "***") if err else ""
+    return detail, msg
+
+
 class YouTubeClient:
     def __init__(self, api_key: str, session: requests.Session | None = None, timeout: float = 20,
                  retries: int = 2, sleep: Callable[[float], None] = time.sleep):
@@ -62,7 +91,13 @@ class YouTubeClient:
             if r.status_code in (400, 401, 403) and reason in _QUOTA:
                 raise QuotaExceeded(f"দৈনিক কোটা শেষ ({reason})")
             if r.status_code in (400, 401, 403) and (reason in _KEY or r.status_code == 401):
-                raise KeyRejected(f"key গ্রহণ হয়নি বা YouTube Data API v3 চালু নেই (HTTP {r.status_code}, {reason or 'কারণ নেই'})")
+                detail, msg = _describe(r, self._key)
+                hint = _HINTS.get(detail) or _HINTS.get(reason) or ""
+                parts = [f"key গ্রহণ হয়নি (HTTP {r.status_code}, {reason or 'কারণ নেই'}" + (f", {detail}" if detail else "") + ")"]
+                if msg:
+                    parts.append(f"Google বলছে: {msg}")
+                parts.append(hint or "সম্ভাব্য কারণ: YouTube Data API v3 চালু নেই, বা key-র restriction GitHub runner আটকাচ্ছে")
+                raise KeyRejected(". ".join(parts))
             if r.status_code in (429, 500, 502, 503, 504) and attempt < self.retries:
                 self.sleep(2 ** attempt)
                 continue

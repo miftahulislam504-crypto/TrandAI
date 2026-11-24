@@ -31,7 +31,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "অডিট ২: query string ও /search নিষিদ্ধ। সাইটম্যাপ ইনডেক্স আছে (sitemap-product-all.xml.gz, www.cartup.com হোস্টে); প্রোডাক্ট URL সেখান থেকে, দাম/রেটিং প্রোডাক্ট পেজে। `soldCount` শুধু ফ্ল্যাশ সেলের পণ্যে"
+      "notes": "অডিট ২: query string ও /search নিষিদ্ধ। সাইটম্যাপ ইনডেক্স আছে (sitemap-product-all.xml.gz, www.cartup.com হোস্টে); প্রোডাক্ট URL সেখান থেকে, দাম/রেটিং প্রোডাক্ট পেজে। `soldCount` শুধু ফ্ল্যাশ সেলের পণ্যে। অডিটের নমুনা ৩০০ KB-তে কাটা, পণ্যের ডেটা নেই; Adapter Probe-এর অপেক্ষা"
     },
     {
       "id": "othoba",
@@ -47,7 +47,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "অডিট: 200, allowed, সার্ভার-রেন্ডার্ড HTML, দাম ও রিভিউ সংখ্যা আছে, সোল্ড নেই"
+      "notes": "অডিট: 200, allowed, সার্ভার-রেন্ডার্ড HTML, দাম ও রিভিউ সংখ্যা আছে, সোল্ড নেই। কার্ড-পার্সার `scrapers/othoba/parse.py` (হোমপেজ-কার্ডে যাচাই); লিস্টিং পেজ ও পেজিনেশন Adapter Probe-এর অপেক্ষা, রানে জোড়া নেই"
     },
     {
       "id": "bagdoom",
@@ -61,7 +61,7 @@
       ],
       "kind": "ecommerce",
       "method": "auto",
-      "notes": "অডিট: 200, allowed, HTML-এ দাম আছে, রেটিং/সোল্ড দেখা যায়নি। ফ্যাশনের জন্য, Othoba-র পরে"
+      "notes": "অডিট: 200, allowed, HTML-এ দাম আছে, রেটিং/সোল্ড দেখা যায়নি। ফ্যাশনের জন্য, Othoba-র পরে। হোমপেজ-কার্ড পার্সার `scrapers/bagdoom/parse.py`; লিস্টিং পেজ Adapter Probe-এর অপেক্ষা"
     },
     {
       "id": "ajkerdeal",
@@ -100,11 +100,11 @@
       "status": "blocked",
       "has_sold_count": null,
       "focus": [
-        "books"
+        "non-book"
       ],
       "kind": "ecommerce",
       "method": "manual",
-      "notes": "অডিট: 403 Cloudflare 'Just a moment' চ্যালেঞ্জ। এই চ্যালেঞ্জ পাশ কাটানো হবে না। বই/ইলেকট্রনিক্সের জন্য হাতে ইনপুট বা বাদ"
+      "notes": "অডিট: 403 Cloudflare 'Just a moment' চ্যালেঞ্জ। এই চ্যালেঞ্জ পাশ কাটানো হবে না। ২০২৬-১১-২৩: বই বাদ (আপনার সিদ্ধান্ত); বই-বাদে অন্য পণ্য নিতে চাওয়া, কিন্তু অডিটের নতুন রানেও 403। স্বয়ংক্রিয় নয়; পথ: পার্টনার-ফিড চাওয়া, হাতে CSV, বা বাদ (progress.md Phase 8)"
     },
     {
       "id": "pickaboo",

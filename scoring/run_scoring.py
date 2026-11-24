@@ -21,6 +21,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
+from scrapers import sensitive
 from scrapers.common.supabase_rest import SupabaseError, SupabaseREST
 from trends.config import load_config as load_trends_config
 from trends.keywords import entry_by_id, match_entry
@@ -50,6 +51,13 @@ def fetch_products(db, today: date, cfg: dict, only: str | None = None) -> list[
         "is_active": "eq.true", "canonical_product_id": "not.is.null"})
     if only:
         listings = [l for l in listings if l["category"] == only]
+    # স্পর্শকাতর পণ্য স্কোরের বাইরে (আগে ঢোকা ডেটাও); কত গেল Summary-তে দেখায়
+    kept, dropped = [], []
+    for l in listings:
+        m = sensitive.match(l.get("title_raw"), l.get("category"))
+        (dropped if m else kept).append({**l, "_sensitive": m} if m else l)
+    fetch_products.excluded = sensitive.summarize_dropped(dropped, title_key="title_raw")
+    listings = kept
     by_listing = {l["id"]: l for l in listings}
     if not by_listing:
         return []
@@ -284,6 +292,10 @@ def summary_markdown(s: dict, today: date, dry: bool, mode: str) -> str:
         L.append(f"- ⚠️ {s['google_warning']}")
     if s.get("ads_warning"):
         L.append(f"- ⚠️ {s['ads_warning']}")
+    sn = s.get("sensitive") or {}
+    if sn.get("count"):
+        L.append(f"- স্পর্শকাতর পণ্য স্কোরের বাইরে রাখা: {sn['count']}টা (" + ", ".join(f"{k} {v}" for k, v in sorted(sn["by_rule"].items())) + ")")
+        L += [f"  - `{e['rule']}` ({e['hit']}): {e['title']}" for e in sn["examples"][:8]]
     if s["scored"]:
         t = s["tiers"]
         L.append(f"- Best: {t.get('best', 0)}, Mid: {t.get('mid', 0)}, Don't: {t.get('dont', 0)}")
@@ -360,6 +372,7 @@ def run(db, cfg: dict, today: date, only: str | None = None, dry_run: bool = Fal
     summary["google_warning"] = google_warning
     summary["ads_warning"] = ads_warning
     summary["ads"] = ads_summary(results, ads_info)
+    summary["sensitive"] = getattr(fetch_products, "excluded", None) or {"count": 0, "by_rule": {}, "examples": []}
     pmap = {p.id: p for p in products}
     return {"summary": summary, "results": results, "products": pmap,
             "spotcheck": spotcheck_markdown(results, pmap, spot_n, today) if scored else ""}
